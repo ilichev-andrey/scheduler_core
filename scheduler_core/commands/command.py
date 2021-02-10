@@ -8,7 +8,10 @@ from interfaces import Serializable
 class Command(Serializable):
     id = str
 
-    def __init__(self, command_id=''):
+    def __init__(self, command_id: str = None):
+        if command_id is None:
+            command_id = ''
+
         self.id = command_id
 
     def __str__(self):

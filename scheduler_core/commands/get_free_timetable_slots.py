@@ -10,7 +10,7 @@ class GetFreeTimetableSlotsCommand(Command):
     services: frozenset
     worker: int
 
-    def __init__(self, command_id='', day: datetime = None, services: frozenset = None, worker: int = None):
+    def __init__(self, command_id: str = None, day: datetime = None, services: frozenset = None, worker: int = None):
         super().__init__(command_id=command_id)
         if day is None:
             day = datetime.fromtimestamp(0)

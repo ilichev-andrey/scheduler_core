@@ -8,7 +8,13 @@ class CommandResponse(Serializable):
     id = str
     status: CommandStatus
 
-    def __init__(self, command_id='', status=CommandStatus.UNKNOWN):
+    def __init__(self, command_id: str = None, status: CommandStatus = None):
+        if command_id is None:
+            command_id = ''
+
+        if status is None:
+            status = CommandStatus.UNKNOWN
+
         self.id = command_id
         self.status = status
 
