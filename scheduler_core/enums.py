@@ -6,6 +6,7 @@ class CommandType(Enum):
     GET_FREE_TIMETABLE_SLOTS = 0
     GET_VISITING_HISTORY = 1
     BOOK_TIMETABLE_SLOT = 3
+    GET_WORKERS = 4
 
 
 class CommandStatus(Enum):
