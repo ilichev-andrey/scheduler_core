@@ -1,15 +1,16 @@
 from datetime import date
-from typing import Dict, List, Tuple
+from typing import Dict, Tuple, List
 
 from psycopg2 import extras
 
-from database import DB, containers, exceptions, provider
+from database import exceptions, containers
+from database.db import DB
 from wrappers import LoggerWrap
 
 
-class ClientTimetableProvider(provider.TimetableProvider):
+class TimetableProvider(object):
     def __init__(self, db: DB):
-        super().__init__(db)
+        self.db = db
 
     def get(self) -> List[containers.TimetableEntry]:
         return self._get('''
