@@ -3,7 +3,8 @@ from typing import List
 from psycopg2 import Error, errorcodes
 from psycopg2 import extras
 
-from database import DB, containers, exceptions
+from database import containers, exceptions
+from database.db import DB
 
 
 class ServiceProvider(object):

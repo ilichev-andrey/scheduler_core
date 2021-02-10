@@ -1,7 +1,7 @@
 from psycopg2 import extras
 
-from database import DB, containers, exceptions
-from database.containers import User
+from database import containers, exceptions
+from database.db import DB
 from database.enums import UserType
 from wrappers import LoggerWrap
 
@@ -10,7 +10,7 @@ class UserProvider(object):
     def __init__(self, db: DB):
         self.db = db
 
-    def add(self, user: User) -> containers.User:
+    def add(self, user: containers.User) -> containers.User:
         LoggerWrap().get_logger().info(f'Добавление пользователя: {user}')
         user = containers.User(user.id, UserType.CLIENT, user.first_name, user.last_name, user.username)
 
