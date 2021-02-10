@@ -25,6 +25,10 @@ class GetFreeTimetableSlotsCommand(Command):
         self.services = services
         self.worker = worker
 
+    def __str__(self):
+        return f'GetFreeTimetableSlotsCommand(id={self.id}, day={self.day}, services={self.services}, '\
+               f'worker={self.worker})'
+
     def get_type(self) -> CommandType:
         return CommandType.GET_FREE_TIMETABLE_SLOTS
 

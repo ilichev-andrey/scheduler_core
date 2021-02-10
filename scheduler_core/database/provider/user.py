@@ -8,24 +8,24 @@ from wrappers import LoggerWrap
 
 class UserProvider(object):
     def __init__(self, db: DB):
-        self.db = db
+        self._db = db
 
     def add(self, user: containers.User) -> containers.User:
         LoggerWrap().get_logger().info(f'Добавление пользователя: {user}')
         user = containers.User(user.id, UserType.CLIENT, user.first_name, user.last_name, user.username)
 
-        cursor = self.db.con.cursor()
+        cursor = self._db.con.cursor()
         cursor.execute('''
             INSERT INTO users (id, type, first_name, last_name, username)
             VALUES(%(id)s, %(type)s, %(first_name)s, %(last_name)s, %(username)s)
         ''', user.asdict())
 
-        self.db.con.commit()
+        self._db.con.commit()
         cursor.close()
         return user
 
     def get_by_id(self, user_id: int) -> containers.User:
-        cursor = self.db.con.cursor(cursor_factory=extras.RealDictCursor)
+        cursor = self._db.con.cursor(cursor_factory=extras.RealDictCursor)
         cursor.execute('''
             SELECT id, type, first_name, last_name, username
             FROM users

@@ -10,7 +10,7 @@ from wrappers import LoggerWrap
 
 class TimetableProvider(object):
     def __init__(self, db: DB):
-        self.db = db
+        self._db = db
 
     def get(self) -> List[containers.TimetableEntry]:
         return self._get('''
@@ -20,12 +20,13 @@ class TimetableProvider(object):
                  client_id,
                  service_id,
                  EXTRACT(epoch FROM create_dt) AS create_dt,
-                 EXTRACT(epoch FROM start_dt) AS start_dt
+                 EXTRACT(epoch FROM start_dt) AS start_dt,
+                 EXTRACT(epoch FROM end_dt) AS end_dt
              FROM timetable
              WHERE client_id ISNULL
         ''')
 
-    def get_by_day(self, day: date) -> List[containers.TimetableEntry]:
+    def get_for_day(self, day: date, worker: int) -> List[containers.TimetableEntry]:
         return self._get('''
             SELECT
                 id,
@@ -33,19 +34,21 @@ class TimetableProvider(object):
                 client_id,
                 service_id,
                 EXTRACT(epoch FROM create_dt) AS create_dt,
-                EXTRACT(epoch FROM start_dt) AS start_dt
+                EXTRACT(epoch FROM start_dt) AS start_dt,
+                EXTRACT(epoch FROM end_dt) AS end_dt
             FROM timetable
             WHERE
-                start_dt >= %(day)s::date
+                worker_id = %(worker_id)s
+                AND start_dt >= %(day)s::date
                 AND start_dt < %(day)s::date+1
-                AND client_id ISNULL
-        ''', {'day': day})
+        ''', {'worker_id': worker, 'day': day})
 
     def get_by_user_id(self, user_id: int) -> List[containers.TimetableEntry]:
         return self._get('''
             SELECT
                 timetable.id,
                 EXTRACT(epoch FROM timetable.start_dt) AS start_dt,
+                EXTRACT(epoch FROM end_dt) AS end_dt,
                 services.name AS service_name
             FROM timetable
             LEFT JOIN services ON services.id = timetable.service_id        
@@ -54,18 +57,18 @@ class TimetableProvider(object):
         ''', (user_id,))
 
     def update_entry(self, timetable_id: int, service_id: int, user_id: int):
-        cursor = self.db.con.cursor()
+        cursor = self._db.con.cursor()
         cursor.execute('''
             UPDATE timetable
             SET client_id=%s, service_id=%s
             WHERE id=%s
         ''', (user_id, service_id, timetable_id))
 
-        self.db.con.commit()
+        self._db.con.commit()
         cursor.close()
 
     def _get(self, query: str, values: Dict or Tuple = None):
-        cursor: extras.RealDictCursor = self.db.con.cursor(cursor_factory=extras.RealDictCursor)
+        cursor: extras.RealDictCursor = self._db.con.cursor(cursor_factory=extras.RealDictCursor)
         cursor.execute(query, values)
 
         entries = cursor.fetchall()
@@ -73,6 +76,6 @@ class TimetableProvider(object):
 
         LoggerWrap().get_logger().info(f'Получены записи из таблицы расписания: {entries}')
         if not entries:
-            raise exceptions.TimetableEntryIsNotFound(f'Не найдена ни одна запись в распивании')
+            raise exceptions.TimetableEntryIsNotFound(f'Не найдена ни одна запись в распиcании')
 
         return [containers.make_timetable_entry(**entry) for entry in entries]

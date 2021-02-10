@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Iterable
 
 from psycopg2 import Error, errorcodes
 from psycopg2 import extras
@@ -9,13 +9,36 @@ from database.db import DB
 
 class ServiceProvider(object):
     def __init__(self, db: DB):
-        self.db = db
+        self._db = db
 
     def get(self) -> List[containers.Service]:
-        cursor = self.db.con.cursor(cursor_factory=extras.RealDictCursor)
-        cursor.execute('''
-            SELECT id, name, execution_time
+        return self._get()
+
+    def get_by_ids(self, ids: Iterable[int]) -> List[containers.Service]:
+        ids = ','.join((str(service_id) for service_id in ids))
+        return self._get(f'WHERE id IN ({ids})')
+
+    def add(self, name: str):
+        cursor = self._db.con.cursor()
+        try:
+            cursor.execute('''
+                INSERT INTO services (name)
+                VALUES (%s)
+            ''', (name,))
+            self._db.con.commit()
+        except Error as e:
+            if e.pgcode == errorcodes.UNIQUE_VIOLATION:
+                raise exceptions.ServiceAlreadyExists(f'{name} уже существует')
+            raise exceptions.BaseDatabaseException(str(e))
+        finally:
+            cursor.close()
+
+    def _get(self, where: str = '') -> List[containers.Service]:
+        cursor = self._db.con.cursor(cursor_factory=extras.RealDictCursor)
+        cursor.execute(f'''
+            SELECT id, name, execution_time_minutes
             FROM services
+            {where}
         ''')
 
         services = cursor.fetchall()
@@ -25,18 +48,3 @@ class ServiceProvider(object):
             raise exceptions.ServiceIsNotFound(f'Не найдена ни одна услуга')
 
         return [containers.make_service(**service) for service in services]
-
-    def add(self, name: str):
-        cursor = self.db.con.cursor()
-        try:
-            cursor.execute('''
-                INSERT INTO services (name)
-                VALUES (%s)
-            ''', (name,))
-            self.db.con.commit()
-        except Error as e:
-            if e.pgcode == errorcodes.UNIQUE_VIOLATION:
-                raise exceptions.ServiceAlreadyExists(f'{name} уже существует')
-            raise exceptions.BaseBotException(str(e))
-        finally:
-            cursor.close()

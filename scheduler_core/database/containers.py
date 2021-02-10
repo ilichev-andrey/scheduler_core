@@ -24,7 +24,7 @@ def make_user(**kwargs) -> User:
 class Service(NamedTuple):
     id: int
     name: str
-    execution_time: int
+    execution_time_minutes: int
 
     def asdict(self) -> Dict:
         return self._asdict()
@@ -42,6 +42,7 @@ class TimetableEntry(NamedTuple):
     service_name: str = None
     create_dt: datetime = None
     start_dt: datetime = None
+    end_dt: datetime = None
 
 
 def make_timetable_entry(**kwargs):
@@ -53,4 +54,8 @@ def make_timetable_entry(**kwargs):
     if start_dt is not None:
         start_dt = datetime.fromtimestamp(start_dt)
 
-    return TimetableEntry(create_dt=create_dt, start_dt=start_dt, **kwargs)
+    end_dt = kwargs.pop('end_dt', None)
+    if end_dt is not None:
+        end_dt = datetime.fromtimestamp(end_dt)
+
+    return TimetableEntry(create_dt=create_dt, start_dt=start_dt, end_dt=end_dt, **kwargs)

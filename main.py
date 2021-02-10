@@ -28,7 +28,7 @@ def main():
 
     logger.create(config.log_file, logging.INFO)
 
-    application = Application(config)
+    application = Application(config, os.getenv('DATABASE_PASSWORD'))
     asyncio.run(application.run())
 
 

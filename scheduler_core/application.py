@@ -5,10 +5,12 @@ from typing import Dict
 import exceptions
 import net
 from command_executors import executors_factory
+from command_responses.command_response import CommandResponse
 from commands import commands_factory
 from commands.command import Command
 from configs import Config
-from enums import CommandType
+from database.db import DB
+from enums import CommandType, CommandStatus
 from net import Client
 
 from wrappers import LoggerWrap
@@ -16,9 +18,11 @@ from wrappers import LoggerWrap
 
 class Application(object):
     _config = Config
+    _db = DB
 
-    def __init__(self, config: Config):
+    def __init__(self, config: Config, database_password: str):
         self._config = config
+        self._db = DB(config.database, password=database_password)
 
     async def run(self):
         await asyncio.gather(
@@ -50,11 +54,18 @@ class Application(object):
     async def _execute_command(self, command_data: Dict, client: Client):
         try:
             command = self._handle_command(command_data)
-            executor = executors_factory.create(command.get_type())
+            executor = executors_factory.create(command.get_type(), self._db)
         except exceptions.CommandException as e:
             LoggerWrap().get_logger().exception(str(e))
-        else:
-            await executor.execute(command, client)
+            return
+
+        try:
+            response = await executor.execute(command)
+        except Exception as e:
+            LoggerWrap().get_logger().exception(str(e))
+            response = CommandResponse(command_id=command.id, status=CommandStatus.INTERNAL_ERROR)
+
+        await client.writeline(json.dumps(response.to_dict()))
 
     @staticmethod
     def _handle_command(data: Dict) -> Command:
