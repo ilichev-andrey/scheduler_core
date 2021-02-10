@@ -1,6 +1,7 @@
+from abc import abstractmethod
 from typing import Dict
 
-from enums import CommandStatus
+from enums import CommandStatus, CommandType
 from interfaces import Serializable
 
 
@@ -18,6 +19,10 @@ class CommandResponse(Serializable):
         self.id = command_id
         self.status = status
 
+    @abstractmethod
+    def get_command_type(self) -> CommandType:
+        pass
+
     def load_from_dict(self, data: Dict) -> bool:
         if not super()._has_keys_in_dict(data, ('id', 'status')):
             return False
@@ -32,6 +37,7 @@ class CommandResponse(Serializable):
     def to_dict(self) -> Dict:
         return {
             'id': self.id,
+            'type': self.get_command_type().value,
             'status': {
                 'code': self.status.value,
                 'message': self.status.name

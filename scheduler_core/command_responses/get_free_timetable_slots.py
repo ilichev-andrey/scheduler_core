@@ -1,7 +1,7 @@
 from typing import Dict, List
 
 from command_responses.command_response import CommandResponse
-from enums import CommandStatus
+from enums import CommandStatus, CommandType
 
 
 class GetFreeTimetableSlotsResponse(CommandResponse):
@@ -13,6 +13,9 @@ class GetFreeTimetableSlotsResponse(CommandResponse):
             timetable_ids = []
 
         self.timetable_ids = timetable_ids
+
+    def get_command_type(self) -> CommandType:
+        return CommandType.GET_FREE_TIMETABLE_SLOTS
 
     def load_from_dict(self, data: Dict) -> bool:
         if not super()._has_keys_in_dict(data, ('timetable',)):
