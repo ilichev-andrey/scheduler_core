@@ -1,3 +1,5 @@
+from typing import List
+
 from psycopg2 import extras
 
 from database import containers, exceptions
@@ -40,3 +42,19 @@ class UserProvider(object):
 
         LoggerWrap().get_logger().info(f'Получена запись из таблицы пользователей: {user}')
         return containers.make_user(**user)
+
+    def get_workers(self) -> List[containers.User]:
+        cursor = self._db.con.cursor(cursor_factory=extras.RealDictCursor)
+        cursor.execute('''
+            SELECT id, type, first_name, last_name, user_name
+            FROM users
+            WHERE type = %s
+        ''', (UserType.WORKER.value,))
+
+        users = cursor.fetchall()
+        cursor.close()
+
+        if not users:
+            raise exceptions.UserIsNotFound(f'Не найден ниодин пользователь')
+
+        return [containers.make_user(**user) for user in users]
