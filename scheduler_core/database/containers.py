@@ -9,7 +9,7 @@ class User(NamedTuple):
     type: UserType
     first_name: str
     last_name: str
-    username: str
+    user_name: str
 
     def asdict(self) -> Dict:
         fields = self._asdict()
