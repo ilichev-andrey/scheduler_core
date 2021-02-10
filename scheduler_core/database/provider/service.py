@@ -13,7 +13,7 @@ class ServiceProvider(object):
     def get(self) -> List[containers.Service]:
         cursor = self.db.con.cursor(cursor_factory=extras.RealDictCursor)
         cursor.execute('''
-            SELECT id, name, time_interval
+            SELECT id, name, execution_time
             FROM services
         ''')
 

@@ -24,7 +24,7 @@ def make_user(**kwargs) -> User:
 class Service(NamedTuple):
     id: int
     name: str
-    time_interval: int
+    execution_time: int
 
     def asdict(self) -> Dict:
         return self._asdict()
