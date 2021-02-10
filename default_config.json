@@ -3,5 +3,11 @@
   "server": {
     "host": "127.0.0.1",
     "port": 45678
+  },
+  "database": {
+    "database": "database",
+    "user": "user",
+    "host": "host",
+    "port": 5432
   }
 }
