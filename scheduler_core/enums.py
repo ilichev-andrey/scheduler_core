@@ -7,6 +7,7 @@ class CommandType(Enum):
     GET_VISITING_HISTORY = 1
     BOOK_TIMETABLE_SLOT = 3
     GET_WORKERS = 4
+    GET_SERVICES = 5
 
 
 class CommandStatus(Enum):

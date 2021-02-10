@@ -1,7 +1,7 @@
 from command_executors.command_executor import CommandExecutor
 from command_responses.command_response import CommandResponse
 from command_responses.get_workers import GetWorkersResponse
-from commands.get_free_timetable_slots import GetFreeTimetableSlotsCommand
+from commands.get_workers import GetWorkersCommand
 from database.db import DB
 from database.provider.user import UserProvider
 from enums import CommandStatus
@@ -14,7 +14,7 @@ class GetWorkersExecutor(CommandExecutor):
     def __init__(self, db: DB):
         self._user_provider = UserProvider(db)
 
-    async def execute(self, command: GetFreeTimetableSlotsCommand) -> CommandResponse:
+    async def execute(self, command: GetWorkersCommand) -> CommandResponse:
         LoggerWrap().get_logger().info(f'Выполнение команды получения работников. {command}')
 
         workers = self._user_provider.get_workers()

@@ -12,11 +12,11 @@ class ServiceProvider(object):
         self._db = db
 
     def get(self) -> List[containers.Service]:
-        return self._get()
+        return self._get('WHERE "enable" = TRUE')
 
     def get_by_ids(self, ids: Iterable[int]) -> List[containers.Service]:
         ids = ','.join((str(service_id) for service_id in ids))
-        return self._get(f'WHERE id IN ({ids})')
+        return self._get(f'WHERE id IN ({ids}) AND "enable" = TRUE')
 
     def add(self, name: str):
         cursor = self._db.con.cursor()
