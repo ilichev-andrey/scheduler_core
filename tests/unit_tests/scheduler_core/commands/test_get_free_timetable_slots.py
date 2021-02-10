@@ -34,12 +34,12 @@ def provider_load_from_dict():
             'data': {'day': timestamp, 'services': [1]},
             'expected': failed_result
         },
-        # Параметр day не является типом int
+        # Тип параметра day должен быть int
         {
             'data': {'day': str(timestamp), 'services': [1], 'worker': 2},
             'expected': failed_result
         },
-        # Параметр services не яляется типом List
+        # Тип параметра services должен быть List
         {
             'data': {'day': timestamp, 'services': {1}, 'worker': 2},
             'expected': failed_result
