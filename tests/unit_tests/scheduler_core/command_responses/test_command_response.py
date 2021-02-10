@@ -3,11 +3,16 @@ import unittest
 from ddt import ddt, idata
 
 from command_responses.command_response import CommandResponse
-from enums import CommandStatus
+from enums import CommandStatus, CommandType
+
+
+class CommandResponseForTest(CommandResponse):
+    def get_command_type(self) -> CommandType:
+        return CommandType.UNKNOWN
 
 
 def provider_load_from_dict():
-    default = CommandResponse()
+    default = CommandResponseForTest()
     failed_result = {
         'func_result': False,
         'id': default.id,
@@ -61,7 +66,7 @@ class TestCommand(unittest.TestCase):
     def test_load_from_dict(self, case_data):
         data, expected = case_data['data'], case_data['expected']
 
-        response = CommandResponse()
+        response = CommandResponseForTest()
         self.assertEqual(expected['func_result'], response.load_from_dict(data))
         self.assertEqual(expected['id'], response.id)
         self.assertEqual(expected['status'], response.status)
@@ -70,13 +75,14 @@ class TestCommand(unittest.TestCase):
         status = CommandStatus.SUCCESSFUL_EXECUTION
         expected = {
             'id': 'command_id',
+            'type': CommandType.UNKNOWN.value,
             'status': {
                 'code': status.value,
                 'message': status.name
             }
         }
 
-        response = CommandResponse()
+        response = CommandResponseForTest()
         response.id = 'command_id'
         response.status = status
         self.assertEqual(expected, response.to_dict())

@@ -3,7 +3,7 @@ import unittest
 from ddt import ddt, idata
 
 from command_responses.get_free_timetable_slots import GetFreeTimetableSlotsResponse
-from enums import CommandStatus
+from enums import CommandStatus, CommandType
 
 
 def provider_load_from_dict():
@@ -57,7 +57,7 @@ def provider_load_from_dict():
 
 
 @ddt
-class TestSummaryResponse(unittest.TestCase):
+class TestGetFreeTimetableSlotsResponse(unittest.TestCase):
     @idata(provider_load_from_dict())
     def test_load_from_dict(self, case_data):
         data, expected = case_data['data'], case_data['expected']
@@ -71,6 +71,7 @@ class TestSummaryResponse(unittest.TestCase):
     def test_to_dict(self):
         expected = {
             'id': 'command_id',
+            'type': CommandType.GET_FREE_TIMETABLE_SLOTS.value,
             'status': {
                 'code': CommandStatus.SUCCESSFUL_EXECUTION.value,
                 'message': CommandStatus.SUCCESSFUL_EXECUTION.name
