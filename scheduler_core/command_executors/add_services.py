@@ -20,7 +20,7 @@ class AddServicesExecutor(CommandExecutor):
 
         try:
             self._service_provider.multi_add(command.services)
-        except exceptions.ServiceAlreadyExists as e:
+        except exceptions.EntryAlreadyExists as e:
             LoggerWrap().get_logger().info(str(e))
             return AddServicesResponse(command_id=command.id, status=CommandStatus.SERVICE_ALREADY_EXISTS)
 

@@ -4,14 +4,11 @@ from typing import Dict, Tuple, List
 from psycopg2 import extras
 
 from database import exceptions, containers
-from database.db import DB
+from database.provider.abstract_provider import AbstractProvider
 from wrappers import LoggerWrap
 
 
-class TimetableProvider(object):
-    def __init__(self, db: DB):
-        self._db = db
-
+class TimetableProvider(AbstractProvider):
     def get(self) -> List[containers.TimetableEntry]:
         return self._get('''
              SELECT
@@ -38,9 +35,9 @@ class TimetableProvider(object):
                 EXTRACT(epoch FROM end_dt) AS end_dt
             FROM timetable
             WHERE
-                worker_id = %(worker_id)s
-                AND start_dt >= %(day)s::date
-                AND start_dt < %(day)s::date+1
+                worker_id=%(worker_id)s
+                AND start_dt>=%(day)s::date
+                AND start_dt<%(day)s::date+1
         ''', {'worker_id': worker, 'day': day})
 
     def get_by_user_id(self, user_id: int) -> List[containers.TimetableEntry]:
@@ -76,6 +73,6 @@ class TimetableProvider(object):
 
         LoggerWrap().get_logger().info(f'Получены записи из таблицы расписания: {entries}')
         if not entries:
-            raise exceptions.TimetableEntryIsNotFound(f'Не найдена ни одна запись в распиcании')
+            raise exceptions.TimetableEntryIsNotFound(f'Не найдена ни одна запись в расписании')
 
         return [containers.make_timetable_entry(**entry) for entry in entries]

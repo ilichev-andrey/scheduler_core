@@ -16,7 +16,7 @@ class ServiceIsNotFound(BaseDatabaseException):
     pass
 
 
-class ServiceAlreadyExists(BaseDatabaseException):
+class EntryAlreadyExists(BaseDatabaseException):
     """Если услуга уже существует"""
     pass
 
