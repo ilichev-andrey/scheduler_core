@@ -24,3 +24,8 @@ class EntryAlreadyExists(BaseDatabaseException):
 class TimetableEntryIsNotFound(BaseDatabaseException):
     """Если запись в расписании не существует"""
     pass
+
+
+class InvalidInputParameters(BaseDatabaseException):
+    """Если получены невалидные данные для БД"""
+    pass

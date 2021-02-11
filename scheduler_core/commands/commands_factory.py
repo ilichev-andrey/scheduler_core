@@ -4,6 +4,7 @@ from commands.add_user import AddUserCommand
 from commands.command import Command
 from commands.get_free_timetable_slots import GetFreeTimetableSlotsCommand
 from commands.get_services import GetServicesCommand
+from commands.get_user import GetUserCommand
 from commands.get_workers import GetWorkersCommand
 from enums import CommandType
 
@@ -24,5 +25,7 @@ def create(command_type: CommandType) -> Command:
         return AddServicesCommand()
     if command_type == CommandType.ADD_USER:
         return AddUserCommand()
+    if command_type == CommandType.GET_USER:
+        return GetUserCommand()
 
     raise exceptions.UnknownCommand(f'Не поддерживается команда данного типа: {command_type}')

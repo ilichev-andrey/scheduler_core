@@ -10,6 +10,7 @@ class CommandType(Enum):
     GET_SERVICES = 5
     ADD_SERVICES = 6
     ADD_USER = 7
+    GET_USER = 8
 
 
 class CommandStatus(Enum):
