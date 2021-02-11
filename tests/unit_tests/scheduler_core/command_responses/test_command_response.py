@@ -61,7 +61,7 @@ def provider_load_from_dict():
 
 
 @ddt
-class TestCommand(unittest.TestCase):
+class TestCommandResponse(unittest.TestCase):
     @idata(provider_load_from_dict())
     def test_load_from_dict(self, case_data):
         data, expected = case_data['data'], case_data['expected']
