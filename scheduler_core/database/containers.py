@@ -5,24 +5,33 @@ from database.enums import UserType
 
 
 class User(NamedTuple):
-    id: int
-    type: UserType
-    first_name: str
-    last_name: str
-    phone_number: str
-    telegram_id: int
-    telegram_name: str
-    viber_id: int
-    viber_name: str
+    id: int = None
+    type: UserType = None
+    first_name: str = None
+    last_name: str = None
+    phone_number: str = None
+    telegram_id: int = None
+    telegram_name: str = None
+    viber_id: int = None
+    viber_name: str = None
 
     def asdict(self) -> Dict:
         fields = self._asdict()
-        fields['type'] = self.type.value
+
+        if isinstance(fields['type'], UserType):
+            fields['type'] = self.type.value
+        else:
+            fields['type'] = UserType.UNKNOWN.value
+
         return fields
 
 
 def make_user(**kwargs) -> User:
-    return User(type=UserType(kwargs.pop('type')), **kwargs)
+    user_type = kwargs.pop('type', None)
+    if user_type is None:
+        user_type = UserType.UNKNOWN
+
+    return User(type=UserType(user_type), **kwargs)
 
 
 class Service(NamedTuple):

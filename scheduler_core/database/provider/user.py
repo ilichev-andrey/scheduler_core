@@ -3,40 +3,31 @@ from typing import List
 from psycopg2 import extras
 
 from database import containers, exceptions
-from database.db import DB
 from database.enums import UserType
+from database.provider.abstract_provider import AbstractProvider
 from wrappers import LoggerWrap
 
 
-class UserProvider(object):
+class UserProvider(AbstractProvider):
     _TABLE_NAME = 'users'
 
-    def __init__(self, db: DB):
-        self._db = db
-
-    def add(self, user: containers.User) -> containers.User:
+    def add(self, user: containers.User) -> None:
         LoggerWrap().get_logger().info(f'Добавление пользователя: {user}')
 
-        cursor = self._db.con.cursor()
-        cursor.execute(f'''
+        self._add(f'''
             INSERT INTO {self._TABLE_NAME}
-            (id, type, first_name, last_name, phone_number, telegram_id, telegram_name, viber_id, viber_name)
+            (type, first_name, last_name, phone_number, telegram_id, telegram_name, viber_id, viber_name)
             VALUES (
-                %(id)s,
                 %(type)s,
                 %(first_name)s,
                 %(last_name)s, 
-                (phone_number)s,
+                %(phone_number)s,
                 %(telegram_id)s,
                 %(telegram_name)s,
-                %(viber_id)s
+                %(viber_id)s,
                 %(viber_name)s
             )
         ''', user.asdict())
-
-        self._db.con.commit()
-        cursor.close()
-        return user
 
     def get_by_id(self, user_id: int) -> containers.User:
         cursor = self._db.con.cursor(cursor_factory=extras.RealDictCursor)
@@ -67,6 +58,6 @@ class UserProvider(object):
         cursor.close()
 
         if not users:
-            raise exceptions.UserIsNotFound(f'Не найден ниодин пользователь')
+            raise exceptions.UserIsNotFound(f'Не найдены пользователи')
 
         return [containers.make_user(**user) for user in users]

@@ -39,7 +39,7 @@ class AddServicesCommand(Command):
         return data
 
     @staticmethod
-    def _service_to_dict(service: Service):
+    def _service_to_dict(service: Service) -> Dict:
         data = service.asdict()
         data.pop('id')
         return data

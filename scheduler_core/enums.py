@@ -9,6 +9,7 @@ class CommandType(Enum):
     GET_WORKERS = 4
     GET_SERVICES = 5
     ADD_SERVICES = 6
+    ADD_USER = 7
 
 
 class CommandStatus(Enum):
@@ -17,3 +18,4 @@ class CommandStatus(Enum):
     INTERNAL_ERROR = 1
     SLOT_ALREADY_BUSY = 2
     SERVICE_ALREADY_EXISTS = 3
+    USER_ALREADY_EXISTS = 4

@@ -1,5 +1,6 @@
 import exceptions
 from command_executors.add_services import AddServicesExecutor
+from command_executors.add_user import AddUserExecutor
 from command_executors.command_executor import CommandExecutor
 from command_executors.get_free_timetable_slots import GetFreeTimetableSlotsExecutor
 from command_executors.get_services import GetServicesExecutor
@@ -22,5 +23,7 @@ def create(command_type: CommandType, db: DB) -> CommandExecutor:
         return GetServicesExecutor(db)
     if command_type == CommandType.ADD_SERVICES:
         return AddServicesExecutor(db)
+    if command_type == CommandType.ADD_USER:
+        return AddUserExecutor(db)
 
     raise exceptions.UnknownCommand(f'Не найден исполнитель для команды данного типа: {command_type}')
