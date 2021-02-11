@@ -22,7 +22,8 @@ def provider_load_from_dict():
         'type': UserType.WORKER.value,
         'first_name': 'first_name',
         'last_name': 'last_name',
-        'user_name': 'user_name'
+        'user_name': 'user_name',
+        'phone_number': '8800300600'
     }
 
     cases = [
@@ -91,7 +92,8 @@ class TestSummaryResponse(unittest.TestCase):
                 'type': UserType.WORKER.value,
                 'first_name': 'first_name',
                 'last_name': 'last_name',
-                'user_name': 'user_name'
+                'user_name': 'user_name',
+                'phone_number': '8800300600'
             }]
         }
 
@@ -103,7 +105,8 @@ class TestSummaryResponse(unittest.TestCase):
             type=UserType.WORKER,
             first_name='first_name',
             last_name='last_name',
-            user_name='user_name'
+            user_name='user_name',
+            phone_number='8800300600'
         )]
         self.assertEqual(expected, response.to_dict())
 

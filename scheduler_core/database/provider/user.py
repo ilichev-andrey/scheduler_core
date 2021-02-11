@@ -14,12 +14,11 @@ class UserProvider(object):
 
     def add(self, user: containers.User) -> containers.User:
         LoggerWrap().get_logger().info(f'Добавление пользователя: {user}')
-        user = containers.User(user.id, UserType.CLIENT, user.first_name, user.last_name, user.user_name)
 
         cursor = self._db.con.cursor()
         cursor.execute('''
-            INSERT INTO users (id, type, first_name, last_name, user_name)
-            VALUES(%(id)s, %(type)s, %(first_name)s, %(last_name)s, %(user_name)s)
+            INSERT INTO users (id, type, first_name, last_name, user_name, phone_number)
+            VALUES(%(id)s, %(type)s, %(first_name)s, %(last_name)s, %(user_name)s, %(phone_number)s)
         ''', user.asdict())
 
         self._db.con.commit()
@@ -29,7 +28,7 @@ class UserProvider(object):
     def get_by_id(self, user_id: int) -> containers.User:
         cursor = self._db.con.cursor(cursor_factory=extras.RealDictCursor)
         cursor.execute('''
-            SELECT id, type, first_name, last_name, user_name
+            SELECT id, type, first_name, last_name, user_name, phone_number
             FROM users
             WHERE id=%s
         ''', (user_id,))
@@ -46,9 +45,9 @@ class UserProvider(object):
     def get_workers(self) -> List[containers.User]:
         cursor = self._db.con.cursor(cursor_factory=extras.RealDictCursor)
         cursor.execute('''
-            SELECT id, type, first_name, last_name, user_name
+            SELECT id, type, first_name, last_name, user_name, phone_number
             FROM users
-            WHERE type = %s
+            WHERE type=%s
         ''', (UserType.WORKER.value,))
 
         users = cursor.fetchall()

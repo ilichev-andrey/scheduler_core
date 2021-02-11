@@ -10,6 +10,7 @@ class User(NamedTuple):
     first_name: str
     last_name: str
     user_name: str
+    phone_number: str
 
     def asdict(self) -> Dict:
         fields = self._asdict()
