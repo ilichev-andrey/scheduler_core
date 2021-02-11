@@ -9,6 +9,8 @@ from wrappers import LoggerWrap
 
 
 class UserProvider(object):
+    _TABLE_NAME = 'users'
+
     def __init__(self, db: DB):
         self._db = db
 
@@ -16,9 +18,20 @@ class UserProvider(object):
         LoggerWrap().get_logger().info(f'Добавление пользователя: {user}')
 
         cursor = self._db.con.cursor()
-        cursor.execute('''
-            INSERT INTO users (id, type, first_name, last_name, user_name, phone_number)
-            VALUES(%(id)s, %(type)s, %(first_name)s, %(last_name)s, %(user_name)s, %(phone_number)s)
+        cursor.execute(f'''
+            INSERT INTO {self._TABLE_NAME}
+            (id, type, first_name, last_name, phone_number, telegram_id, telegram_name, viber_id, viber_name)
+            VALUES (
+                %(id)s,
+                %(type)s,
+                %(first_name)s,
+                %(last_name)s, 
+                (phone_number)s,
+                %(telegram_id)s,
+                %(telegram_name)s,
+                %(viber_id)s
+                %(viber_name)s
+            )
         ''', user.asdict())
 
         self._db.con.commit()
@@ -27,9 +40,9 @@ class UserProvider(object):
 
     def get_by_id(self, user_id: int) -> containers.User:
         cursor = self._db.con.cursor(cursor_factory=extras.RealDictCursor)
-        cursor.execute('''
-            SELECT id, type, first_name, last_name, user_name, phone_number
-            FROM users
+        cursor.execute(f'''
+            SELECT id, type, first_name, last_name, phone_number, telegram_id, telegram_name, viber_id, viber_name
+            FROM {self._TABLE_NAME}
             WHERE id=%s
         ''', (user_id,))
 
@@ -44,9 +57,9 @@ class UserProvider(object):
 
     def get_workers(self) -> List[containers.User]:
         cursor = self._db.con.cursor(cursor_factory=extras.RealDictCursor)
-        cursor.execute('''
-            SELECT id, type, first_name, last_name, user_name, phone_number
-            FROM users
+        cursor.execute(f'''
+            SELECT id, type, first_name, last_name, phone_number, telegram_id, telegram_name, viber_id, viber_name
+            FROM {self._TABLE_NAME}
             WHERE type=%s
         ''', (UserType.WORKER.value,))
 

@@ -22,8 +22,11 @@ def provider_load_from_dict():
         'type': UserType.WORKER.value,
         'first_name': 'first_name',
         'last_name': 'last_name',
-        'user_name': 'user_name',
-        'phone_number': '8800300600'
+        'phone_number': '8800300600',
+        'telegram_id': 456,
+        'telegram_name': 'telegram_name',
+        'viber_id': 567,
+        'viber_name': 'viber_name'
     }
 
     cases = [
@@ -92,8 +95,11 @@ class TestSummaryResponse(unittest.TestCase):
                 'type': UserType.WORKER.value,
                 'first_name': 'first_name',
                 'last_name': 'last_name',
-                'user_name': 'user_name',
-                'phone_number': '8800300600'
+                'phone_number': '8800300600',
+                'telegram_id': 456,
+                'telegram_name': 'telegram_name',
+                'viber_id': 567,
+                'viber_name': 'viber_name'
             }]
         }
 
@@ -105,8 +111,11 @@ class TestSummaryResponse(unittest.TestCase):
             type=UserType.WORKER,
             first_name='first_name',
             last_name='last_name',
-            user_name='user_name',
-            phone_number='8800300600'
+            phone_number='8800300600',
+            telegram_id=456,
+            telegram_name='telegram_name',
+            viber_id=567,
+            viber_name='viber_name'
         )]
         self.assertEqual(expected, response.to_dict())
 

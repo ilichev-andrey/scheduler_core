@@ -9,8 +9,11 @@ class User(NamedTuple):
     type: UserType
     first_name: str
     last_name: str
-    user_name: str
     phone_number: str
+    telegram_id: int
+    telegram_name: str
+    viber_id: int
+    viber_name: str
 
     def asdict(self) -> Dict:
         fields = self._asdict()
