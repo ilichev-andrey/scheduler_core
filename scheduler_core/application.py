@@ -5,14 +5,13 @@ from typing import Dict
 import exceptions
 import net
 from command_executors import executors_factory
-from command_responses.command_response import CommandResponse
+from command_responses.error_response import ErrorResponse
 from commands import commands_factory
 from commands.command import Command
 from configs import Config
 from database.db import DB
-from enums import CommandType, CommandStatus
+from enums import CommandType
 from net import Client
-
 from wrappers import LoggerWrap
 
 
@@ -63,7 +62,7 @@ class Application(object):
             response = await executor.execute(command)
         except Exception as e:
             LoggerWrap().get_logger().exception(str(e))
-            response = CommandResponse(command_id=command.id, status=CommandStatus.INTERNAL_ERROR)
+            response = ErrorResponse(command_id=command.id, command_type=command.get_type())
 
         await client.writeline(json.dumps(response.to_dict()))
 

@@ -23,7 +23,7 @@ def make_user(**kwargs) -> User:
 
 
 class Service(NamedTuple):
-    id: int
+    id: int or None
     name: str
     execution_time_minutes: int
 

@@ -8,6 +8,7 @@ class CommandType(Enum):
     BOOK_TIMETABLE_SLOT = 3
     GET_WORKERS = 4
     GET_SERVICES = 5
+    ADD_SERVICES = 6
 
 
 class CommandStatus(Enum):
@@ -15,3 +16,4 @@ class CommandStatus(Enum):
     SUCCESSFUL_EXECUTION = 0
     INTERNAL_ERROR = 1
     SLOT_ALREADY_BUSY = 2
+    SERVICE_ALREADY_EXISTS = 3

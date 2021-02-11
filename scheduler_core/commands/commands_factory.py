@@ -1,4 +1,5 @@
 import exceptions
+from commands.add_services import AddServicesCommand
 from commands.command import Command
 from commands.get_free_timetable_slots import GetFreeTimetableSlotsCommand
 from commands.get_services import GetServicesCommand
@@ -18,5 +19,7 @@ def create(command_type: CommandType) -> Command:
         return GetWorkersCommand()
     if command_type == CommandType.GET_SERVICES:
         return GetServicesCommand()
+    if command_type == CommandType.ADD_SERVICES:
+        return AddServicesCommand()
 
     raise exceptions.UnknownCommand(f'Не поддерживается команда данного типа: {command_type}')
