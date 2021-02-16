@@ -57,6 +57,69 @@ def provider_load_from_dict():
                 'status': CommandStatus.SUCCESSFUL_EXECUTION,
                 'services': [make_service(**service_data)],
             }
+        },
+        # Успешная загрузка данных при неудачно выполненной команде
+        {
+            'data': {
+                'id': 'command_id',
+                'status': {
+                    'code': CommandStatus.INTERNAL_ERROR.value,
+                    'message': CommandStatus.INTERNAL_ERROR.name
+                }
+            },
+            'expected': {
+                'func_result': True,
+                'id': 'command_id',
+                'status': CommandStatus.INTERNAL_ERROR,
+                'services': default.services
+            }
+        }
+    ]
+    for case in cases:
+        yield case
+
+
+def provider_to_dict():
+    cases = [
+        # Успешное выполнение команды, отправляются все данные
+        {
+            'response': GetServicesResponse(
+                command_id='command_id',
+                status=CommandStatus.SUCCESSFUL_EXECUTION,
+                services=[Service(
+                    id=123,
+                    name='service_name',
+                    execution_time_minutes=90
+                )]
+            ),
+            'expected': {
+                'id': 'command_id',
+                'type': CommandType.GET_SERVICES.value,
+                'status': {
+                    'code': CommandStatus.SUCCESSFUL_EXECUTION.value,
+                    'message': CommandStatus.SUCCESSFUL_EXECUTION.name
+                },
+                'services': [{
+                    'id': 123,
+                    'name': 'service_name',
+                    'execution_time_minutes': 90
+                }]
+            }
+        },
+        # Неуспешное выполнение команды, не отправляется информация об услугах
+        {
+            'response': GetServicesResponse(
+                command_id='command_id',
+                status=CommandStatus.INTERNAL_ERROR
+            ),
+            'expected': {
+                'id': 'command_id',
+                'type': CommandType.GET_SERVICES.value,
+                'status': {
+                    'code': CommandStatus.INTERNAL_ERROR.value,
+                    'message': CommandStatus.INTERNAL_ERROR.name
+                }
+            }
         }
     ]
     for case in cases:
@@ -75,29 +138,9 @@ class TestGetServicesResponse(unittest.TestCase):
         self.assertEqual(expected['status'], response.status)
         self.assertEqual(expected['services'], response.services)
 
-    def test_to_dict(self):
-        expected = {
-            'id': 'command_id',
-            'type': CommandType.GET_SERVICES.value,
-            'status': {
-                'code': CommandStatus.SUCCESSFUL_EXECUTION.value,
-                'message': CommandStatus.SUCCESSFUL_EXECUTION.name
-            },
-            'services': [{
-                'id': 123,
-                'name': 'service_name',
-                'execution_time_minutes': 90
-            }]
-        }
-
-        response = GetServicesResponse()
-        response.id = 'command_id'
-        response.status = CommandStatus.SUCCESSFUL_EXECUTION
-        response.services = [Service(
-            id=123,
-            name='service_name',
-            execution_time_minutes=90
-        )]
+    @idata(provider_to_dict())
+    def test_to_dict(self, case_data):
+        response, expected = case_data['response'], case_data['expected']
         self.assertEqual(expected, response.to_dict())
 
 
