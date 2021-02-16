@@ -50,6 +50,61 @@ def provider_load_from_dict():
                 'status': CommandStatus.SUCCESSFUL_EXECUTION,
                 'timetable': [1, 2]
             }
+        },
+        # Успешная загрузка данных при неудачно выполненной команде
+        {
+            'data': {
+                'id': 'command_id',
+                'status': {
+                    'code': CommandStatus.NO_FREE_SLOTS_FOUND.value,
+                    'message': CommandStatus.NO_FREE_SLOTS_FOUND.name
+                }
+            },
+            'expected': {
+                'func_result': True,
+                'id': 'command_id',
+                'status': CommandStatus.NO_FREE_SLOTS_FOUND,
+                'timetable': default.timetable_ids
+            }
+        }
+    ]
+    for case in cases:
+        yield case
+
+
+def provider_to_dict():
+    cases = [
+        # Успешное выполнение команды, отправляются все данные
+        {
+            'response': GetFreeTimetableSlotsResponse(
+                command_id='command_id',
+                status=CommandStatus.SUCCESSFUL_EXECUTION,
+                timetable_ids=[123, 456]
+            ),
+            'expected': {
+                'id': 'command_id',
+                'type': CommandType.GET_FREE_TIMETABLE_SLOTS.value,
+                'status': {
+                    'code': CommandStatus.SUCCESSFUL_EXECUTION.value,
+                    'message': CommandStatus.SUCCESSFUL_EXECUTION.name
+                },
+                'timetable': [123, 456]
+            }
+        },
+        # Неуспешное выполнение команды, не отправляются идентификаторы свободных слотов расписания
+        {
+            'response': GetFreeTimetableSlotsResponse(
+                command_id='command_id',
+                status=CommandStatus.NO_FREE_SLOTS_FOUND
+            ),
+            'expected': {
+                'id': 'command_id',
+                'type': CommandType.GET_FREE_TIMETABLE_SLOTS.value,
+                'status': {
+                    'code': CommandStatus.NO_FREE_SLOTS_FOUND.value,
+                    'message': CommandStatus.NO_FREE_SLOTS_FOUND.name
+                }
+            }
         }
     ]
     for case in cases:
@@ -68,21 +123,9 @@ class TestGetFreeTimetableSlotsResponse(unittest.TestCase):
         self.assertEqual(expected['status'], response.status)
         self.assertEqual(expected['timetable'], response.timetable_ids)
 
-    def test_to_dict(self):
-        expected = {
-            'id': 'command_id',
-            'type': CommandType.GET_FREE_TIMETABLE_SLOTS.value,
-            'status': {
-                'code': CommandStatus.SUCCESSFUL_EXECUTION.value,
-                'message': CommandStatus.SUCCESSFUL_EXECUTION.name
-            },
-            'timetable': [123, 456]
-        }
-
-        response = GetFreeTimetableSlotsResponse()
-        response.id = 'command_id'
-        response.status = CommandStatus.SUCCESSFUL_EXECUTION
-        response.timetable_ids = [123, 456]
+    @idata(provider_to_dict())
+    def test_to_dict(self, case_data):
+        response, expected = case_data['response'], case_data['expected']
         self.assertEqual(expected, response.to_dict())
 
 
