@@ -71,8 +71,9 @@ class TimetableProvider(AbstractProvider):
         entries = cursor.fetchall()
         cursor.close()
 
-        LoggerWrap().get_logger().info(f'Получены записи из таблицы расписания: {entries}')
         if not entries:
-            raise exceptions.TimetableEntryIsNotFound(f'Не найдена ни одна запись в расписании')
+            raise exceptions.TimetableEntryIsNotFound(f'Не найдена ни одна запись в расписании\nquery="{query}"\n'
+                                                      f'values={values}')
 
+        LoggerWrap().get_logger().info(f'Получены записи из таблицы расписания: {entries}')
         return [containers.make_timetable_entry(**entry) for entry in entries]

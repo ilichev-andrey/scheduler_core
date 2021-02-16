@@ -21,3 +21,4 @@ class CommandStatus(Enum):
     SERVICE_ALREADY_EXISTS = 3
     USER_ALREADY_EXISTS = 4
     USER_IS_NOT_FOUND = 5
+    NO_FREE_SLOTS_FOUND = 6

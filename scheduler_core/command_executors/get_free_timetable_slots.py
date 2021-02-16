@@ -5,6 +5,7 @@ from scheduler_core.command_executors.command_executor import CommandExecutor
 from scheduler_core.command_responses.command_response import CommandResponse
 from scheduler_core.command_responses.get_free_timetable_slots import GetFreeTimetableSlotsResponse
 from scheduler_core.commands.get_free_timetable_slots import GetFreeTimetableSlotsCommand
+from scheduler_core.database import exceptions
 from scheduler_core.database.containers import Service, TimetableEntry
 from scheduler_core.database.db import DB
 from scheduler_core.database.provider.service import ServiceProvider
@@ -51,11 +52,22 @@ class GetFreeTimetableSlotsExecutor(CommandExecutor):
     async def execute(self, command: GetFreeTimetableSlotsCommand) -> CommandResponse:
         LoggerWrap().get_logger().info(f'Выполнение команды получения свободных слотов в расписании. {command}')
 
+        try:
+            slots = self._timetable_provider.get_for_day(command.day, command.worker)
+        except exceptions.TimetableEntryIsNotFound as e:
+            LoggerWrap().get_logger().info(str(e))
+            LoggerWrap().get_logger().info('Не найдены свободные слоты в таблице расписания')
+            return GetFreeTimetableSlotsResponse(command_id=command.id, status=CommandStatus.NO_FREE_SLOTS_FOUND)
+
         execution_time_minutes = _get_services_execution_time(self._service_provider.get_by_ids(command.services))
-        slots = self._timetable_provider.get_for_day(command.day, command.worker)
         slots = _filter_slots_by_execution_time(slots, execution_time_minutes)
 
-        LoggerWrap().get_logger().info(f'Выполненена команда получения свободных слотов в расписании. {command}')
+        if not slots:
+            LoggerWrap().get_logger().info('Не найдены свободные слоты для данного времени выполнения услуги. '
+                                           f'execution_time_minutes={execution_time_minutes}')
+            return GetFreeTimetableSlotsResponse(command_id=command.id, status=CommandStatus.NO_FREE_SLOTS_FOUND)
+
+        LoggerWrap().get_logger().info(f'Найдены свободне слоты в расписании. slots={slots}')
         return GetFreeTimetableSlotsResponse(
             command_id=command.id,
             status=CommandStatus.SUCCESSFUL_EXECUTION,
