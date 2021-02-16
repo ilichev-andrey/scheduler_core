@@ -1,3 +1,5 @@
+from typing import Dict
+
 from scheduler_core.command_responses.command_response import CommandResponse
 from scheduler_core.enums import CommandType, CommandStatus
 
@@ -14,3 +16,9 @@ class ErrorResponse(CommandResponse):
 
     def get_command_type(self) -> CommandType:
         return self.command_type
+
+    def _load_data(self, data: Dict) -> bool:
+        return False
+
+    def _unload_data(self) -> Dict:
+        return {}

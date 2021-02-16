@@ -1,4 +1,5 @@
 import unittest
+from typing import Dict
 
 from ddt import ddt, idata
 
@@ -9,6 +10,12 @@ from scheduler_core.enums import CommandStatus, CommandType
 class CommandResponseForTest(CommandResponse):
     def get_command_type(self) -> CommandType:
         return CommandType.UNKNOWN
+
+    def _load_data(self, data: Dict) -> bool:
+        return True
+
+    def _unload_data(self) -> Dict:
+        return {}
 
 
 def provider_load_from_dict():

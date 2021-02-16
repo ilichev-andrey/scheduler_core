@@ -17,22 +17,15 @@ class GetFreeTimetableSlotsResponse(CommandResponse):
     def get_command_type(self) -> CommandType:
         return CommandType.GET_FREE_TIMETABLE_SLOTS
 
-    def load_from_dict(self, data: Dict) -> bool:
+    def _load_data(self, data: Dict) -> bool:
         if not super()._has_keys_in_dict(data, ('timetable',)):
             return False
 
         if not isinstance(data['timetable'], List):
             return False
 
-        if not super().load_from_dict(data):
-            return False
-
         self.timetable_ids = data['timetable']
         return True
 
-    def to_dict(self) -> Dict:
-        data = super().to_dict()
-        data.update({
-            'timetable': self.timetable_ids
-        })
-        return data
+    def _unload_data(self) -> Dict:
+        return {'timetable': self.timetable_ids}

@@ -18,20 +18,15 @@ class GetUserResponse(CommandResponse):
     def get_command_type(self) -> CommandType:
         return CommandType.GET_USER
 
-    def load_from_dict(self, data: Dict) -> bool:
+    def _load_data(self, data: Dict) -> bool:
         if not super()._has_keys_in_dict(data, ('user',)):
             return False
 
         if not isinstance(data['user'], Dict):
             return False
 
-        if not super().load_from_dict(data):
-            return False
-
         self.user = make_user(**data['user'])
         return True
 
-    def to_dict(self) -> Dict:
-        data = super().to_dict()
-        data.update({'user': self.user.asdict()})
-        return data
+    def _unload_data(self) -> Dict:
+        return {'user': self.user.asdict()}

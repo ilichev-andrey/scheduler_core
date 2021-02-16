@@ -18,22 +18,15 @@ class GetServicesResponse(CommandResponse):
     def get_command_type(self) -> CommandType:
         return CommandType.GET_SERVICES
 
-    def load_from_dict(self, data: Dict) -> bool:
+    def _load_data(self, data: Dict) -> bool:
         if not super()._has_keys_in_dict(data, ('services',)):
             return False
 
         if not isinstance(data['services'], List):
             return False
 
-        if not super().load_from_dict(data):
-            return False
-
         self.services = [make_service(**service_data) for service_data in data['services']]
         return True
 
-    def to_dict(self) -> Dict:
-        data = super().to_dict()
-        data.update({
-            'services': [service.asdict() for service in self.services]
-        })
-        return data
+    def _unload_data(self) -> Dict:
+        return {'services': [service.asdict() for service in self.services]}

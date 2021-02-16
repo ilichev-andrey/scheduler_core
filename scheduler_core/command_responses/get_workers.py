@@ -18,22 +18,15 @@ class GetWorkersResponse(CommandResponse):
     def get_command_type(self) -> CommandType:
         return CommandType.GET_WORKERS
 
-    def load_from_dict(self, data: Dict) -> bool:
+    def _load_data(self, data: Dict) -> bool:
         if not super()._has_keys_in_dict(data, ('workers',)):
             return False
 
         if not isinstance(data['workers'], List):
             return False
 
-        if not super().load_from_dict(data):
-            return False
-
         self.workers = [make_user(**worker_data) for worker_data in data['workers']]
         return True
 
-    def to_dict(self) -> Dict:
-        data = super().to_dict()
-        data.update({
-            'workers': [worker.asdict() for worker in self.workers]
-        })
-        return data
+    def _unload_data(self) -> Dict:
+        return {'workers': [worker.asdict() for worker in self.workers]}
