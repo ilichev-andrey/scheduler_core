@@ -64,6 +64,81 @@ def provider_load_from_dict():
                 'status': CommandStatus.SUCCESSFUL_EXECUTION,
                 'workers': [make_user(**worker_data)],
             }
+        },
+        # Успешная загрузка данных при неудачно выполненной команде
+        {
+            'data': {
+                'id': 'command_id',
+                'status': {
+                    'code': CommandStatus.INTERNAL_ERROR.value,
+                    'message': CommandStatus.INTERNAL_ERROR.name
+                }
+            },
+            'expected': {
+                'func_result': True,
+                'id': 'command_id',
+                'status': CommandStatus.INTERNAL_ERROR,
+                'workers': default.workers
+            }
+        }
+    ]
+    for case in cases:
+        yield case
+
+
+def provider_to_dict():
+    cases = [
+        # Успешное выполнение команды, отправляются все данные
+        {
+            'response': GetWorkersResponse(
+                command_id='command_id',
+                status=CommandStatus.SUCCESSFUL_EXECUTION,
+                workers=[User(
+                    id=123,
+                    type=UserType.WORKER,
+                    first_name='first_name',
+                    last_name='last_name',
+                    phone_number='8800300600',
+                    telegram_id=456,
+                    telegram_name='telegram_name',
+                    viber_id=567,
+                    viber_name='viber_name'
+                )]
+            ),
+            'expected': {
+                'id': 'command_id',
+                'type': CommandType.GET_WORKERS.value,
+                'status': {
+                    'code': CommandStatus.SUCCESSFUL_EXECUTION.value,
+                    'message': CommandStatus.SUCCESSFUL_EXECUTION.name
+                },
+                'workers': [{
+                    'id': 123,
+                    'type': UserType.WORKER.value,
+                    'first_name': 'first_name',
+                    'last_name': 'last_name',
+                    'phone_number': '8800300600',
+                    'telegram_id': 456,
+                    'telegram_name': 'telegram_name',
+                    'viber_id': 567,
+                    'viber_name': 'viber_name'
+                }]
+            }
+        },
+        # Неуспешное выполнение команды, не отправляется информация о работниках
+        {
+            'response': GetWorkersResponse(
+                command_id='command_id',
+                status=CommandStatus.INTERNAL_ERROR
+            ),
+            'expected': {
+                'id': 'command_id',
+                'type': CommandType.GET_WORKERS.value,
+                'status': {
+                    'code': CommandStatus.INTERNAL_ERROR.value,
+                    'message': CommandStatus.INTERNAL_ERROR.name
+                }
+            }
         }
     ]
     for case in cases:
@@ -82,41 +157,9 @@ class TestGetWorkersResponse(unittest.TestCase):
         self.assertEqual(expected['status'], response.status)
         self.assertEqual(expected['workers'], response.workers)
 
-    def test_to_dict(self):
-        expected = {
-            'id': 'command_id',
-            'type': CommandType.GET_WORKERS.value,
-            'status': {
-                'code': CommandStatus.SUCCESSFUL_EXECUTION.value,
-                'message': CommandStatus.SUCCESSFUL_EXECUTION.name
-            },
-            'workers': [{
-                'id': 123,
-                'type': UserType.WORKER.value,
-                'first_name': 'first_name',
-                'last_name': 'last_name',
-                'phone_number': '8800300600',
-                'telegram_id': 456,
-                'telegram_name': 'telegram_name',
-                'viber_id': 567,
-                'viber_name': 'viber_name'
-            }]
-        }
-
-        response = GetWorkersResponse()
-        response.id = 'command_id'
-        response.status = CommandStatus.SUCCESSFUL_EXECUTION
-        response.workers = [User(
-            id=123,
-            type=UserType.WORKER,
-            first_name='first_name',
-            last_name='last_name',
-            phone_number='8800300600',
-            telegram_id=456,
-            telegram_name='telegram_name',
-            viber_id=567,
-            viber_name='viber_name'
-        )]
+    @idata(provider_to_dict())
+    def test_to_dict(self, case_data):
+        response, expected = case_data['response'], case_data['expected']
         self.assertEqual(expected, response.to_dict())
 
 
