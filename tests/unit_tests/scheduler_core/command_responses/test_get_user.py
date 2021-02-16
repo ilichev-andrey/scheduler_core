@@ -67,6 +67,81 @@ def provider_load_from_dict():
                 'status': CommandStatus.SUCCESSFUL_EXECUTION,
                 'user': make_user(**user_data)
             }
+        },
+        # Успешная загрузка данных при неудачно выполненной команде
+        {
+            'data': {
+                'id': 'command_id',
+                'status': {
+                    'code': CommandStatus.USER_IS_NOT_FOUND.value,
+                    'message': CommandStatus.USER_IS_NOT_FOUND.name
+                }
+            },
+            'expected': {
+                'func_result': True,
+                'id': 'command_id',
+                'status': CommandStatus.USER_IS_NOT_FOUND,
+                'user': default.user
+            }
+        }
+    ]
+    for case in cases:
+        yield case
+
+
+def provider_to_dict():
+    cases = [
+        # Успешное выполнение команды, отправляются все данные
+        {
+            'response': GetUserResponse(
+                command_id='command_id',
+                status=CommandStatus.SUCCESSFUL_EXECUTION,
+                user=User(
+                    id=789,
+                    type=UserType.CLIENT,
+                    first_name='first_name',
+                    last_name='last_name',
+                    phone_number='88003000600',
+                    telegram_id=12345,
+                    telegram_name='telegram_name',
+                    viber_id=54321,
+                    viber_name='viber_name'
+                )
+            ),
+            'expected': {
+                'id': 'command_id',
+                'type': CommandType.GET_USER.value,
+                'status': {
+                    'code': CommandStatus.SUCCESSFUL_EXECUTION.value,
+                    'message': CommandStatus.SUCCESSFUL_EXECUTION.name
+                },
+                'user': {
+                    'id': 789,
+                    'type': UserType.CLIENT.value,
+                    'first_name': 'first_name',
+                    'last_name': 'last_name',
+                    'phone_number': '88003000600',
+                    'telegram_id': 12345,
+                    'telegram_name': 'telegram_name',
+                    'viber_id': 54321,
+                    'viber_name': 'viber_name'
+                }
+            }
+        },
+        # Неуспешное выполнение команды, не отправляется информация о пользователе
+        {
+            'response': GetUserResponse(
+                command_id='command_id',
+                status=CommandStatus.USER_IS_NOT_FOUND
+            ),
+            'expected': {
+                'id': 'command_id',
+                'type': CommandType.GET_USER.value,
+                'status': {
+                    'code': CommandStatus.USER_IS_NOT_FOUND.value,
+                    'message': CommandStatus.USER_IS_NOT_FOUND.name
+                }
+            }
         }
     ]
     for case in cases:
@@ -79,48 +154,16 @@ class TestGetUserResponse(unittest.TestCase):
     def test_load_from_dict(self, case_data):
         data, expected = case_data['data'], case_data['expected']
 
-        command = GetUserResponse()
-        self.assertEqual(expected['func_result'], command.load_from_dict(data))
-        self.assertEqual(expected['id'], command.id)
-        self.assertEqual(expected['status'], command.status)
-        self.assertEqual(expected['user'], command.user)
+        response = GetUserResponse()
+        self.assertEqual(expected['func_result'], response.load_from_dict(data))
+        self.assertEqual(expected['id'], response.id)
+        self.assertEqual(expected['status'], response.status)
+        self.assertEqual(expected['user'], response.user)
 
-    def test_to_dict(self):
-        expected = {
-            'id': 'command_id',
-            'type': CommandType.GET_USER.value,
-            'status': {
-                'code': CommandStatus.SUCCESSFUL_EXECUTION.value,
-                'message': CommandStatus.SUCCESSFUL_EXECUTION.name
-            },
-            'user': {
-                'id': 789,
-                'type': UserType.CLIENT.value,
-                'first_name': 'first_name',
-                'last_name': 'last_name',
-                'phone_number': '88003000600',
-                'telegram_id': 12345,
-                'telegram_name': 'telegram_name',
-                'viber_id': 54321,
-                'viber_name': 'viber_name'
-            }
-        }
-
-        command = GetUserResponse()
-        command.id = 'command_id'
-        command.status = CommandStatus.SUCCESSFUL_EXECUTION
-        command.user = User(
-            id=789,
-            type=UserType.CLIENT,
-            first_name='first_name',
-            last_name='last_name',
-            phone_number='88003000600',
-            telegram_id=12345,
-            telegram_name='telegram_name',
-            viber_id=54321,
-            viber_name='viber_name'
-        )
-        self.assertEqual(expected, command.to_dict())
+    @idata(provider_to_dict())
+    def test_to_dict(self, case_data):
+        response, expected = case_data['response'], case_data['expected']
+        self.assertEqual(expected, response.to_dict())
 
 
 if __name__ == '__main__':
