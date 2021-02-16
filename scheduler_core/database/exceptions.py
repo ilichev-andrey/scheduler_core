@@ -17,7 +17,7 @@ class ServiceIsNotFound(BaseDatabaseException):
 
 
 class EntryAlreadyExists(BaseDatabaseException):
-    """Если услуга уже существует"""
+    """Если запись уже существует в таблице"""
     pass
 
 
