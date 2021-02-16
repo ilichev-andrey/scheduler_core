@@ -24,5 +24,5 @@ class AddServicesExecutor(CommandExecutor):
             LoggerWrap().get_logger().info(str(e))
             return AddServicesResponse(command_id=command.id, status=CommandStatus.SERVICE_ALREADY_EXISTS)
 
-        LoggerWrap().get_logger().info(f'Выполненена команда добавления списка услуг. {command}')
+        LoggerWrap().get_logger().info(f'Выполнена команда добавления списка услуг. {command}')
         return AddServicesResponse(command_id=command.id, status=CommandStatus.SUCCESSFUL_EXECUTION)

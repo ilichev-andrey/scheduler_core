@@ -26,7 +26,7 @@ def provider_load_from_dict():
             'data': {'timetable': {1, 2}},
             'expected': failed_result
         },
-        # Не удалось загрузить даные в CommandResponse (отсутствует параметр статус)
+        # Не удалось загрузить данные в CommandResponse (отсутствует параметр статус)
         {
             'data': {
                 'timetable': [1, 2],

@@ -4,7 +4,7 @@ class BaseSchedulerCoreException(Exception):
 
 
 class CommandException(BaseSchedulerCoreException):
-    """Базовое искличение для выполнения команды"""
+    """Базовое исключение для выполнения команды"""
     pass
 
 

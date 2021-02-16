@@ -19,5 +19,5 @@ class GetServicesExecutor(CommandExecutor):
 
         services = self._service_provider.get()
 
-        LoggerWrap().get_logger().info(f'Выполненена команда получения списка услуг. {command}')
+        LoggerWrap().get_logger().info(f'Выполнена команда получения списка услуг. {command}')
         return GetServicesResponse(command_id=command.id, status=CommandStatus.SUCCESSFUL_EXECUTION, services=services)

@@ -73,6 +73,6 @@ class UserProvider(AbstractProvider):
         cursor.close()
 
         if not users:
-            raise exceptions.UserIsNotFound(f'Не найдены пользователи')
+            raise exceptions.UserIsNotFound(f'Не найдены работники')
 
         return [containers.make_user(**user) for user in users]

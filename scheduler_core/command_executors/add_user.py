@@ -20,7 +20,7 @@ class AddUserExecutor(CommandExecutor):
     async def execute(self, command: AddUserCommand) -> CommandResponse:
         LoggerWrap().get_logger().info(f'Выполнение команды добавления пользователя. {command}')
 
-        # Все добаляемые пользовалели по умолчанию являются клиентами
+        # Все добавляемые пользователи по умолчанию являются клиентами
         user_data = command.user.asdict()
         user_data.pop('type', None)
         user = make_user(type=UserType.CLIENT, **user_data)
@@ -31,5 +31,5 @@ class AddUserExecutor(CommandExecutor):
             LoggerWrap().get_logger().info(str(e))
             return AddUserResponse(command_id=command.id, status=CommandStatus.USER_ALREADY_EXISTS)
 
-        LoggerWrap().get_logger().info(f'Выполненена команда добавления пользователя. {command}')
+        LoggerWrap().get_logger().info(f'Выполнена команда добавления пользователя. {command}')
         return AddUserResponse(command_id=command.id, status=CommandStatus.SUCCESSFUL_EXECUTION)

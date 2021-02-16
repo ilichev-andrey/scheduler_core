@@ -39,7 +39,7 @@ async def open_connection(host: str, port: int) -> Client:
 
 
 async def start_server(handler: Callable[[Client], Coroutine[Any, Any, None]], host: str, port: int) -> Server:
-    """Запустить сокет сервер и общаться с подключенными клиентамию
+    """Запустить сокет сервер и общаться с подключенными клиентами
 
     Первый параметр, `handler`, принимает параметр: client. client - это объект Client из данного модуля.
     Этот параметр должен быть сопрограммой.

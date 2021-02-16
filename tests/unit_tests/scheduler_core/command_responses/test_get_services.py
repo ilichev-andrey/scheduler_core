@@ -33,7 +33,7 @@ def provider_load_from_dict():
             'data': {'services': {}},
             'expected': failed_result
         },
-        # Не удалось загрузить даные в CommandResponse (отсутствует параметр статус)
+        # Не удалось загрузить данные в CommandResponse (отсутствует параметр статус)
         {
             'data': {
                 'services': [service_data],

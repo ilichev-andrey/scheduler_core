@@ -24,5 +24,5 @@ class GetUserExecutor(CommandExecutor):
             LoggerWrap().get_logger().info(str(e))
             return GetUserResponse(command_id=command.id, status=CommandStatus.USER_IS_NOT_FOUND)
 
-        LoggerWrap().get_logger().info(f'Выполненена команда добавления получения пользователя. {command}')
+        LoggerWrap().get_logger().info(f'Выполнена команда добавления получения пользователя. {command}')
         return GetUserResponse(command_id=command.id, status=CommandStatus.SUCCESSFUL_EXECUTION, user=user)

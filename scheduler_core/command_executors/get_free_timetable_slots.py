@@ -67,7 +67,7 @@ class GetFreeTimetableSlotsExecutor(CommandExecutor):
                                            f'execution_time_minutes={execution_time_minutes}')
             return GetFreeTimetableSlotsResponse(command_id=command.id, status=CommandStatus.NO_FREE_SLOTS_FOUND)
 
-        LoggerWrap().get_logger().info(f'Найдены свободне слоты в расписании. slots={slots}')
+        LoggerWrap().get_logger().info(f'Найдены свободные слоты в расписании. slots={slots}')
         return GetFreeTimetableSlotsResponse(
             command_id=command.id,
             status=CommandStatus.SUCCESSFUL_EXECUTION,

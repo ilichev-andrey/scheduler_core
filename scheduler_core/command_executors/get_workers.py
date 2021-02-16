@@ -19,7 +19,7 @@ class GetWorkersExecutor(CommandExecutor):
 
         workers = self._user_provider.get_workers()
 
-        LoggerWrap().get_logger().info(f'Выполненена команда получения работников. {command}')
+        LoggerWrap().get_logger().info(f'Выполнена команда получения работников. {command}')
         return GetWorkersResponse(
             command_id=command.id,
             status=CommandStatus.SUCCESSFUL_EXECUTION,
