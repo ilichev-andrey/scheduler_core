@@ -47,6 +47,6 @@ class ServiceProvider(AbstractProvider):
         cursor.close()
 
         if not services:
-            raise exceptions.ServiceIsNotFound(f'Не найдены услуги')
+            raise exceptions.ServiceIsNotFound(f'Не найдены услуги, where={where}')
 
         return [containers.make_service(**service) for service in services]
