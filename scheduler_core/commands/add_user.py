@@ -1,8 +1,8 @@
 from typing import Dict
 
-from commands.command import Command
-from database.containers import User, make_user
-from enums import CommandType
+from scheduler_core.commands.command import Command
+from scheduler_core.database.containers import User, make_user
+from scheduler_core.enums import CommandType
 
 
 class AddUserCommand(Command):

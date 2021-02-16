@@ -1,10 +1,10 @@
-from command_executors.command_executor import CommandExecutor
-from command_responses.command_response import CommandResponse
-from command_responses.get_workers import GetWorkersResponse
-from commands.get_workers import GetWorkersCommand
-from database.db import DB
-from database.provider.user import UserProvider
-from enums import CommandStatus
+from scheduler_core.command_executors.command_executor import CommandExecutor
+from scheduler_core.command_responses.command_response import CommandResponse
+from scheduler_core.command_responses.get_workers import GetWorkersResponse
+from scheduler_core.commands.get_workers import GetWorkersCommand
+from scheduler_core.database.db import DB
+from scheduler_core.database.provider.user import UserProvider
+from scheduler_core.enums import CommandStatus
 from wrappers import LoggerWrap
 
 

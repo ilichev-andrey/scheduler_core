@@ -2,8 +2,8 @@ import unittest
 
 from ddt import ddt, idata
 
-from command_responses.get_free_timetable_slots import GetFreeTimetableSlotsResponse
-from enums import CommandStatus, CommandType
+from scheduler_core.command_responses.get_free_timetable_slots import GetFreeTimetableSlotsResponse
+from scheduler_core.enums import CommandStatus, CommandType
 
 
 def provider_load_from_dict():

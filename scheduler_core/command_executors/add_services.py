@@ -1,11 +1,11 @@
-from command_executors.command_executor import CommandExecutor
-from command_responses.add_services import AddServicesResponse
-from command_responses.command_response import CommandResponse
-from commands.add_services import AddServicesCommand
-from database import exceptions
-from database.db import DB
-from database.provider.service import ServiceProvider
-from enums import CommandStatus
+from scheduler_core.command_executors.command_executor import CommandExecutor
+from scheduler_core.command_responses.add_services import AddServicesResponse
+from scheduler_core.command_responses.command_response import CommandResponse
+from scheduler_core.commands.add_services import AddServicesCommand
+from scheduler_core.database import exceptions
+from scheduler_core.database.db import DB
+from scheduler_core.database.provider.service import ServiceProvider
+from scheduler_core.enums import CommandStatus
 from wrappers import LoggerWrap
 
 

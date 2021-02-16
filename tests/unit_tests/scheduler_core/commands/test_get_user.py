@@ -2,8 +2,8 @@ import unittest
 
 from ddt import ddt, idata
 
-from commands.get_user import GetUserCommand
-from enums import CommandType
+from scheduler_core.commands.get_user import GetUserCommand
+from scheduler_core.enums import CommandType
 
 
 def provider_load_from_dict():

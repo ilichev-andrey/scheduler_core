@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import Dict, List
 
-from commands.command import Command
-from enums import CommandType
+from scheduler_core.commands.command import Command
+from scheduler_core.enums import CommandType
 
 
 class GetFreeTimetableSlotsCommand(Command):

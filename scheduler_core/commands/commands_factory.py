@@ -1,12 +1,12 @@
-import exceptions
-from commands.add_services import AddServicesCommand
-from commands.add_user import AddUserCommand
-from commands.command import Command
-from commands.get_free_timetable_slots import GetFreeTimetableSlotsCommand
-from commands.get_services import GetServicesCommand
-from commands.get_user import GetUserCommand
-from commands.get_workers import GetWorkersCommand
-from enums import CommandType
+from scheduler_core import exceptions
+from scheduler_core.commands.add_services import AddServicesCommand
+from scheduler_core.commands.add_user import AddUserCommand
+from scheduler_core.commands.command import Command
+from scheduler_core.commands.get_free_timetable_slots import GetFreeTimetableSlotsCommand
+from scheduler_core.commands.get_services import GetServicesCommand
+from scheduler_core.commands.get_user import GetUserCommand
+from scheduler_core.commands.get_workers import GetWorkersCommand
+from scheduler_core.enums import CommandType
 
 
 def create(command_type: CommandType) -> Command:

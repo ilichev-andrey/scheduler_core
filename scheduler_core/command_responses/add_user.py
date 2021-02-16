@@ -1,5 +1,5 @@
-from command_responses.command_response import CommandResponse
-from enums import CommandType
+from scheduler_core.command_responses.command_response import CommandResponse
+from scheduler_core.enums import CommandType
 
 
 class AddUserResponse(CommandResponse):

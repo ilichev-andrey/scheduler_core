@@ -1,13 +1,13 @@
-import exceptions
-from command_executors.add_services import AddServicesExecutor
-from command_executors.add_user import AddUserExecutor
-from command_executors.command_executor import CommandExecutor
-from command_executors.get_free_timetable_slots import GetFreeTimetableSlotsExecutor
-from command_executors.get_services import GetServicesExecutor
-from command_executors.get_user import GetUserExecutor
-from command_executors.get_workers import GetWorkersExecutor
-from database.db import DB
-from enums import CommandType
+from scheduler_core import exceptions
+from scheduler_core.command_executors.add_services import AddServicesExecutor
+from scheduler_core.command_executors.add_user import AddUserExecutor
+from scheduler_core.command_executors.command_executor import CommandExecutor
+from scheduler_core.command_executors.get_free_timetable_slots import GetFreeTimetableSlotsExecutor
+from scheduler_core.command_executors.get_services import GetServicesExecutor
+from scheduler_core.command_executors.get_user import GetUserExecutor
+from scheduler_core.command_executors.get_workers import GetWorkersExecutor
+from scheduler_core.database.db import DB
+from scheduler_core.enums import CommandType
 
 
 def create(command_type: CommandType, db: DB) -> CommandExecutor:

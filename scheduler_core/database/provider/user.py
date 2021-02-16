@@ -2,9 +2,9 @@ from typing import List
 
 from psycopg2 import extras
 
-from database import containers, exceptions
-from database.enums import UserType
-from database.provider.abstract_provider import AbstractProvider
+from scheduler_core.database import containers, exceptions
+from scheduler_core.database.enums import UserType
+from scheduler_core.database.provider.abstract_provider import AbstractProvider
 from wrappers import LoggerWrap
 
 

@@ -1,15 +1,15 @@
 from datetime import timedelta
 from typing import List
 
-from command_executors.command_executor import CommandExecutor
-from command_responses.command_response import CommandResponse
-from command_responses.get_free_timetable_slots import GetFreeTimetableSlotsResponse
-from commands.get_free_timetable_slots import GetFreeTimetableSlotsCommand
-from database.containers import Service, TimetableEntry
-from database.db import DB
-from database.provider.service import ServiceProvider
-from database.provider.timetable import TimetableProvider
-from enums import CommandStatus
+from scheduler_core.command_executors.command_executor import CommandExecutor
+from scheduler_core.command_responses.command_response import CommandResponse
+from scheduler_core.command_responses.get_free_timetable_slots import GetFreeTimetableSlotsResponse
+from scheduler_core.commands.get_free_timetable_slots import GetFreeTimetableSlotsCommand
+from scheduler_core.database.containers import Service, TimetableEntry
+from scheduler_core.database.db import DB
+from scheduler_core.database.provider.service import ServiceProvider
+from scheduler_core.database.provider.timetable import TimetableProvider
+from scheduler_core.enums import CommandStatus
 from wrappers import LoggerWrap
 
 

@@ -1,8 +1,8 @@
 from typing import Dict, List
 
-from command_responses.command_response import CommandResponse
-from database.containers import User, make_user
-from enums import CommandStatus, CommandType
+from scheduler_core.command_responses.command_response import CommandResponse
+from scheduler_core.database.containers import User, make_user
+from scheduler_core.enums import CommandStatus, CommandType
 
 
 class GetWorkersResponse(CommandResponse):

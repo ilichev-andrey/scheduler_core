@@ -2,10 +2,10 @@ import unittest
 
 from ddt import ddt, idata
 
-from command_responses.get_workers import GetWorkersResponse
-from database.containers import User, make_user
-from database.enums import UserType
-from enums import CommandStatus, CommandType
+from scheduler_core.command_responses.get_workers import GetWorkersResponse
+from scheduler_core.database.containers import User, make_user
+from scheduler_core.database.enums import UserType
+from scheduler_core.enums import CommandStatus, CommandType
 
 
 def provider_load_from_dict():

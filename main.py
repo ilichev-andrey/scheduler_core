@@ -5,8 +5,8 @@ import sys
 
 import asyncio
 
-import configs
-from application import Application
+from scheduler_core import configs
+from scheduler_core.application import Application
 from wrappers import logger
 
 CONFIG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.json')

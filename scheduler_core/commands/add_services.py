@@ -1,8 +1,8 @@
 from typing import Dict, List
 
-from commands.command import Command
-from database.containers import Service, make_service
-from enums import CommandType
+from scheduler_core.commands.command import Command
+from scheduler_core.database.containers import Service, make_service
+from scheduler_core.enums import CommandType
 
 
 class AddServicesCommand(Command):

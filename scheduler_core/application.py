@@ -2,16 +2,14 @@ import asyncio
 import json
 from typing import Dict
 
-import exceptions
-import net
-from command_executors import executors_factory
-from command_responses.error_response import ErrorResponse
-from commands import commands_factory
-from commands.command import Command
-from configs import Config
-from database.db import DB
-from enums import CommandType
-from net import Client
+from scheduler_core import exceptions, net
+from scheduler_core.command_executors import executors_factory
+from scheduler_core.command_responses.error_response import ErrorResponse
+from scheduler_core.commands import commands_factory
+from scheduler_core.commands.command import Command
+from scheduler_core.configs import Config
+from scheduler_core.database.db import DB
+from scheduler_core.enums import CommandType
 from wrappers import LoggerWrap
 
 
@@ -33,12 +31,12 @@ class Application(object):
         server = await net.start_server(handler=self._handle_data, host=server_config.host, port=server_config.port)
         await server.run()
 
-    async def _handle_data(self, client: Client):
+    async def _handle_data(self, client: net.Client):
         data = await self._read_data(client)
         await self._execute_command(data, client)
 
     @staticmethod
-    async def _read_data(client: Client) -> Dict:
+    async def _read_data(client: net.Client) -> Dict:
         """
         :raises
             JSONDecodeError если полученная команда не в формате JSON
@@ -50,7 +48,7 @@ class Application(object):
             LoggerWrap().get_logger().exception(str(e))
             raise
 
-    async def _execute_command(self, command_data: Dict, client: Client):
+    async def _execute_command(self, command_data: Dict, client: net.Client):
         try:
             command = self._handle_command(command_data)
             executor = executors_factory.create(command.get_type(), self._db)

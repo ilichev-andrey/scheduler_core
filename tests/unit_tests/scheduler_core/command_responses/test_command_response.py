@@ -2,8 +2,8 @@ import unittest
 
 from ddt import ddt, idata
 
-from command_responses.command_response import CommandResponse
-from enums import CommandStatus, CommandType
+from scheduler_core.command_responses.command_response import CommandResponse
+from scheduler_core.enums import CommandStatus, CommandType
 
 
 class CommandResponseForTest(CommandResponse):

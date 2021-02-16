@@ -1,4 +1,4 @@
-from exceptions import BaseSchedulerCoreException
+from scheduler_core.exceptions import BaseSchedulerCoreException
 
 
 class BaseDatabaseException(BaseSchedulerCoreException):

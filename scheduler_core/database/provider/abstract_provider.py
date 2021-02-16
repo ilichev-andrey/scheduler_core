@@ -2,8 +2,8 @@ from typing import Dict
 
 from psycopg2 import Error, errorcodes
 
-from database import exceptions
-from database.db import DB
+from scheduler_core.database import exceptions
+from scheduler_core.database.db import DB
 from wrappers import LoggerWrap
 
 

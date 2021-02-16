@@ -1,13 +1,13 @@
-from command_executors.command_executor import CommandExecutor
-from command_responses.add_user import AddUserResponse
-from command_responses.command_response import CommandResponse
-from commands.add_user import AddUserCommand
-from database import exceptions
-from database.containers import make_user
-from database.db import DB
-from database.enums import UserType
-from database.provider.user import UserProvider
-from enums import CommandStatus
+from scheduler_core.command_executors.command_executor import CommandExecutor
+from scheduler_core.command_responses.add_user import AddUserResponse
+from scheduler_core.command_responses.command_response import CommandResponse
+from scheduler_core.commands.add_user import AddUserCommand
+from scheduler_core.database import exceptions
+from scheduler_core.database.containers import make_user
+from scheduler_core.database.db import DB
+from scheduler_core.database.enums import UserType
+from scheduler_core.database.provider.user import UserProvider
+from scheduler_core.enums import CommandStatus
 from wrappers import LoggerWrap
 
 

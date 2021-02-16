@@ -1,8 +1,8 @@
 from abc import abstractmethod
 from typing import Dict
 
-from enums import CommandStatus, CommandType
-from interfaces import Serializable
+from scheduler_core.enums import CommandStatus, CommandType
+from scheduler_core.interfaces import Serializable
 
 
 class CommandResponse(Serializable):

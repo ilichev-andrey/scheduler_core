@@ -3,8 +3,8 @@ from datetime import datetime
 
 from ddt import ddt, idata
 
-from commands.get_free_timetable_slots import GetFreeTimetableSlotsCommand
-from enums import CommandType
+from scheduler_core.commands.get_free_timetable_slots import GetFreeTimetableSlotsCommand
+from scheduler_core.enums import CommandType
 
 
 def provider_load_from_dict():

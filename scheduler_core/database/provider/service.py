@@ -2,9 +2,9 @@ from typing import List, Iterable
 
 from psycopg2 import extras
 
-from database import containers, exceptions
-from database.containers import Service
-from database.provider.abstract_provider import AbstractProvider
+from scheduler_core.database import containers, exceptions
+from scheduler_core.database.containers import Service
+from scheduler_core.database.provider.abstract_provider import AbstractProvider
 
 
 class ServiceProvider(AbstractProvider):

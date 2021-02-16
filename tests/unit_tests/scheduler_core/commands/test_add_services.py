@@ -2,9 +2,9 @@ import unittest
 
 from ddt import ddt, idata
 
-from commands.add_services import AddServicesCommand
-from database.containers import make_service, Service
-from enums import CommandType
+from scheduler_core.commands.add_services import AddServicesCommand
+from scheduler_core.database.containers import make_service, Service
+from scheduler_core.enums import CommandType
 
 
 def provider_load_from_dict():

@@ -1,7 +1,7 @@
 import psycopg2
 from psycopg2 import extensions
 
-from configs import DatabaseConfig
+from scheduler_core.configs import DatabaseConfig
 
 
 class DB(object):
