@@ -2,8 +2,9 @@ from typing import List, Iterable
 
 from psycopg2 import extras
 
-from scheduler_core.database import containers, exceptions
-from scheduler_core.database.containers import Service
+from scheduler_core import containers
+from scheduler_core.containers import Service
+from scheduler_core.database import exceptions
 from scheduler_core.database.provider.abstract_provider import AbstractProvider
 
 

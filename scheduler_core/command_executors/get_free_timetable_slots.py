@@ -5,8 +5,8 @@ from scheduler_core.command_executors.command_executor import CommandExecutor
 from scheduler_core.command_responses.command_response import CommandResponse
 from scheduler_core.command_responses.get_free_timetable_slots import GetFreeTimetableSlotsResponse
 from scheduler_core.commands.get_free_timetable_slots import GetFreeTimetableSlotsCommand
+from scheduler_core.containers import Service, TimetableEntry
 from scheduler_core.database import exceptions
-from scheduler_core.database.containers import Service, TimetableEntry
 from scheduler_core.database.db import DB
 from scheduler_core.database.provider.service import ServiceProvider
 from scheduler_core.database.provider.timetable import TimetableProvider

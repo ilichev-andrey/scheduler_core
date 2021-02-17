@@ -3,7 +3,7 @@ import unittest
 from ddt import ddt, idata
 
 from scheduler_core.commands.add_services import AddServicesCommand
-from scheduler_core.database.containers import make_service, Service
+from scheduler_core.containers import make_service, Service
 from scheduler_core.enums import CommandType
 
 

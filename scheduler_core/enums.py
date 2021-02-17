@@ -22,3 +22,9 @@ class CommandStatus(Enum):
     USER_ALREADY_EXISTS = 4
     USER_IS_NOT_FOUND = 5
     NO_FREE_SLOTS_FOUND = 6
+
+
+class UserType(Enum):
+    UNKNOWN = -1
+    WORKER = 0
+    CLIENT = 1

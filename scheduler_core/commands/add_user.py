@@ -1,7 +1,7 @@
 from typing import Dict
 
 from scheduler_core.commands.command import Command
-from scheduler_core.database.containers import User, make_user
+from scheduler_core.containers import User, make_user
 from scheduler_core.enums import CommandType
 
 

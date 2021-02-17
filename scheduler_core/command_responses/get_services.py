@@ -1,7 +1,7 @@
 from typing import Dict, List
 
 from scheduler_core.command_responses.command_response import CommandResponse
-from scheduler_core.database.containers import Service, make_service
+from scheduler_core.containers import Service, make_service
 from scheduler_core.enums import CommandStatus, CommandType
 
 

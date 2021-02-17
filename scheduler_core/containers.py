@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import NamedTuple, Dict
 
-from scheduler_core.database.enums import UserType
+from scheduler_core.enums import UserType
 
 
 class User(NamedTuple):

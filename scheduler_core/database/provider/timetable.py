@@ -3,7 +3,8 @@ from typing import Dict, Tuple, List
 
 from psycopg2 import extras
 
-from scheduler_core.database import exceptions, containers
+from scheduler_core import containers
+from scheduler_core.database import exceptions
 from scheduler_core.database.provider.abstract_provider import AbstractProvider
 from wrappers import LoggerWrap
 

@@ -3,9 +3,8 @@ import unittest
 from ddt import ddt, idata
 
 from scheduler_core.command_responses.get_workers import GetWorkersResponse
-from scheduler_core.database.containers import User, make_user
-from scheduler_core.database.enums import UserType
-from scheduler_core.enums import CommandStatus, CommandType
+from scheduler_core.containers import User, make_user
+from scheduler_core.enums import CommandStatus, CommandType, UserType
 
 
 def provider_load_from_dict():

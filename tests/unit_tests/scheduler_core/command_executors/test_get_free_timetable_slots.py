@@ -2,7 +2,7 @@ import unittest
 from datetime import datetime
 
 from scheduler_core.command_executors import get_free_timetable_slots
-from scheduler_core.database.containers import TimetableEntry
+from scheduler_core.containers import TimetableEntry
 
 
 class TestFilterSlotsByExecutionTime(unittest.TestCase):
