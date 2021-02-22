@@ -1,7 +1,7 @@
 from typing import NamedTuple, Dict
 
 
-class ServerConfig(NamedTuple):
+class ConnectionConfig(NamedTuple):
     host: str
     port: int
 
@@ -15,7 +15,7 @@ class DatabaseConfig(NamedTuple):
 
 class Config(NamedTuple):
     log_file: str
-    server: ServerConfig
+    server: ConnectionConfig
     database: DatabaseConfig
 
 
@@ -29,7 +29,7 @@ def load_config(data: Dict) -> Config:
     database_data = data['database']
     return Config(
         log_file=data['log_file'],
-        server=ServerConfig(host=server_data['host'], port=server_data['port']),
+        server=ConnectionConfig(host=server_data['host'], port=server_data['port']),
         database=DatabaseConfig(
             database=database_data['database'],
             user=database_data['user'],

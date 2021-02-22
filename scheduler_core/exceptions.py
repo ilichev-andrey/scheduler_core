@@ -16,3 +16,8 @@ class UnknownCommand(CommandException):
 class InvalidFormatCommand(CommandException):
     """Получена команда с невалидным форматом данных"""
     pass
+
+
+class InvalidFormatCommandResponse(CommandException):
+    """Получен результат выполнения команды в невалидном формате"""
+    pass

@@ -1,5 +1,14 @@
 import asyncio
-from typing import Callable, Coroutine, Any
+import json
+from typing import Callable, Coroutine, Any, Dict
+
+from scheduler_core.command_responses import responses_factory
+
+from scheduler_core import exceptions
+from scheduler_core.command_responses.command_response import CommandResponse
+from scheduler_core.commands.command import Command
+from scheduler_core.enums import CommandType
+from wrappers import LoggerWrap
 
 
 class Client(object):
@@ -48,3 +57,40 @@ async def start_server(handler: Callable[[Client], Coroutine[Any, Any, None]], h
         await handler(Client(reader=reader, writer=writer))
 
     return Server(await asyncio.start_server(client_connected_cb, host=host, port=port))
+
+
+def __load_response(data: Dict) -> CommandResponse:
+    """
+    :raises
+        UnknownCommand если получен результат неизвестной команды
+        InvalidFormatCommand если не удалось загрузить ответ команды
+    """
+
+    if 'type' not in data:
+        raise exceptions.InvalidFormatCommandResponse(f'Не найден параметр "type" в данных: {data}')
+
+    response = responses_factory.create(CommandType(data['type']))
+    if not response.load_from_dict(data):
+        raise exceptions.InvalidFormatCommandResponse(f'Не удалось загрузить ответ команды, данные: {data}')
+
+    LoggerWrap().get_logger().info(f'Ответ команды обработан: {response}')
+    return response
+
+
+async def send_command(command: Command, host: str, port: int) -> CommandResponse:
+    """
+    :raises
+        UnknownCommand если получен результат неизвестной команды
+        InvalidFormatCommand если не удалось загрузить ответ команды
+    """
+
+    client = await open_connection(host=host, port=port)
+    data = json.dumps(command.to_dict())
+    await client.writeline(data)
+    LoggerWrap().get_logger().info(f'Отправлена команда: {data}')
+
+    data = await client.readline()
+    LoggerWrap().get_logger().info(f'Получен ответ: {data}')
+    client.close()
+
+    return __load_response(json.loads(data))
