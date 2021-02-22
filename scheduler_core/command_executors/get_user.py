@@ -16,7 +16,7 @@ class GetUserExecutor(CommandExecutor):
         self._user_provider = UserProvider(db)
 
     async def execute(self, command: GetUserCommand) -> CommandResponse:
-        LoggerWrap().get_logger().info(f'Выполнение команды добавления получения пользователя. {command}')
+        LoggerWrap().get_logger().info(f'Выполнение команды получения пользователя. {command}')
 
         try:
             user = self._user_provider.get_buy_messenger_id(telegram_id=command.telegram_id, viber_id=command.viber_id)
@@ -24,5 +24,5 @@ class GetUserExecutor(CommandExecutor):
             LoggerWrap().get_logger().info(str(e))
             return GetUserResponse(command_id=command.id, status=CommandStatus.USER_IS_NOT_FOUND)
 
-        LoggerWrap().get_logger().info(f'Выполнена команда добавления получения пользователя. {command}')
+        LoggerWrap().get_logger().info(f'Выполнена команда получения пользователя. {command}')
         return GetUserResponse(command_id=command.id, status=CommandStatus.SUCCESSFUL_EXECUTION, user=user)

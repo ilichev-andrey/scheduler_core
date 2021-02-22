@@ -7,8 +7,11 @@ from scheduler_core.containers import User, make_user
 from scheduler_core.enums import CommandType, UserType
 
 
+COMMAND_ID = ''
+
+
 def provider_load_from_dict():
-    default = AddUserCommand()
+    default = AddUserCommand(command_id=COMMAND_ID)
     failed_result = {
         'func_result': False,
         'id': default.id,
@@ -64,7 +67,7 @@ class TestAddUserCommand(unittest.TestCase):
     def test_load_from_dict(self, case_data):
         data, expected = case_data['data'], case_data['expected']
 
-        command = AddUserCommand()
+        command = AddUserCommand(command_id=COMMAND_ID)
         self.assertEqual(expected['func_result'], command.load_from_dict(data))
         self.assertEqual(expected['id'], command.id)
         self.assertEqual(expected['user'], command.user)

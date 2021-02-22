@@ -11,8 +11,11 @@ class CommandForTest(Command):
         return CommandType.UNKNOWN
 
 
+COMMAND_ID = ''
+
+
 def provider_load_from_dict():
-    default = CommandForTest()
+    default = CommandForTest(command_id=COMMAND_ID)
     failed_result = {
         'func_result': False,
         'id': default.id
@@ -45,7 +48,7 @@ class TestCommand(unittest.TestCase):
     def test_load_from_dict(self, case_data):
         data, expected = case_data['data'], case_data['expected']
 
-        response = CommandForTest()
+        response = CommandForTest(command_id=COMMAND_ID)
         self.assertEqual(expected['func_result'], response.load_from_dict(data))
         self.assertEqual(expected['id'], response.id)
 

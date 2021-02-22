@@ -7,8 +7,11 @@ from scheduler_core.commands.get_free_timetable_slots import GetFreeTimetableSlo
 from scheduler_core.enums import CommandType
 
 
+COMMAND_ID = ''
+
+
 def provider_load_from_dict():
-    default = GetFreeTimetableSlotsCommand()
+    default = GetFreeTimetableSlotsCommand(command_id=COMMAND_ID)
     failed_result = {
         'func_result': False,
         'id': default.id,
@@ -76,7 +79,7 @@ class TestGetFreeTimetableSlotsCommand(unittest.TestCase):
     def test_load_from_dict(self, case_data):
         data, expected = case_data['data'], case_data['expected']
 
-        command = GetFreeTimetableSlotsCommand()
+        command = GetFreeTimetableSlotsCommand(command_id=COMMAND_ID)
         self.assertEqual(expected['func_result'], command.load_from_dict(data))
         self.assertEqual(expected['id'], command.id)
         self.assertEqual(expected['day'], command.day)
