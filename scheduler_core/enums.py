@@ -11,6 +11,7 @@ class CommandType(Enum):
     ADD_SERVICES = 6
     ADD_USER = 7
     GET_USER = 8
+    TAKE_TIMETABLE_SLOTS = 9
 
 
 class CommandStatus(Enum):

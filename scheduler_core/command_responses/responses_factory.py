@@ -6,6 +6,7 @@ from scheduler_core.command_responses.get_free_timetable_slots import GetFreeTim
 from scheduler_core.command_responses.get_services import GetServicesResponse
 from scheduler_core.command_responses.get_user import GetUserResponse
 from scheduler_core.command_responses.get_workers import GetWorkersResponse
+from scheduler_core.command_responses.take_timetable_slots import TakeTimetableSlotsResponse
 from scheduler_core.enums import CommandType
 
 
@@ -27,5 +28,7 @@ def create(command_type: CommandType) -> CommandResponse:
         return AddUserResponse()
     if command_type == CommandType.GET_USER:
         return GetUserResponse()
+    if command_type == CommandType.TAKE_TIMETABLE_SLOTS:
+        return TakeTimetableSlotsResponse()
 
     raise exceptions.UnknownCommand(f'Не поддерживается команда данного типа: {command_type}')
