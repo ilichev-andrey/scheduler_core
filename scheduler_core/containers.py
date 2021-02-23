@@ -4,6 +4,32 @@ from typing import NamedTuple, Dict
 from scheduler_core.enums import UserType
 
 
+class DateRanges(NamedTuple):
+    start_dt: datetime = None
+    end_dt: datetime = None
+
+    def asdict(self) -> Dict:
+        data = self._asdict()
+        if self.start_dt is not None:
+            data['start_dt'] = int(self.start_dt.timestamp())
+        if self.end_dt is not None:
+            data['end_dt'] = int(self.end_dt.timestamp())
+
+        return data
+
+
+def make_date_ranges(**kwargs) -> DateRanges:
+    start_dt = kwargs.pop('start_dt', None)
+    if start_dt is not None:
+        start_dt = datetime.fromtimestamp(start_dt)
+
+    end_dt = kwargs.pop('end_dt', None)
+    if end_dt is not None:
+        end_dt = datetime.fromtimestamp(end_dt)
+
+    return DateRanges(start_dt=start_dt, end_dt=end_dt)
+
+
 class User(NamedTuple):
     id: int = None
     type: UserType = None
@@ -69,7 +95,7 @@ class TimetableEntry(NamedTuple):
         return data
 
 
-def make_timetable_entry(**kwargs):
+def make_timetable_entry(**kwargs) -> TimetableEntry:
     create_dt = kwargs.pop('create_dt', None)
     if create_dt is not None:
         create_dt = datetime.fromtimestamp(create_dt)
