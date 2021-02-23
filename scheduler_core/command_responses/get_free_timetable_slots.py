@@ -17,7 +17,8 @@ class GetFreeTimetableSlotsResponse(CommandResponse):
         self.timetable_entries = timetable_entries
 
     def __str__(self):
-        return f'GetFreeTimetableSlotsResponse(timetable_entries={self.timetable_entries})'
+        return f'GetFreeTimetableSlotsResponse(id={self.id}, status={self.status}, ' \
+               f'timetable_entries={self.timetable_entries})'
 
     def get_command_type(self) -> CommandType:
         return CommandType.GET_FREE_TIMETABLE_SLOTS

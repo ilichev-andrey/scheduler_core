@@ -14,6 +14,9 @@ class ErrorResponse(CommandResponse):
 
         self.command_type = command_type
 
+    def __str__(self):
+        return f'ErrorResponse(id={self.id}, status={self.status}, command_type={self.command_type})'
+
     def get_command_type(self) -> CommandType:
         return self.command_type
 

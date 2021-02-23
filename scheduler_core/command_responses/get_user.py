@@ -15,6 +15,9 @@ class GetUserResponse(CommandResponse):
 
         self.user = user
 
+    def __str__(self):
+        return f'GetUserResponse(id={self.id}, status={self.status}, user={self.user})'
+
     def get_command_type(self) -> CommandType:
         return CommandType.GET_USER
 

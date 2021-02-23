@@ -19,6 +19,9 @@ class CommandResponse(Serializable):
         self.id = command_id
         self.status = status
 
+    def __str__(self):
+        return f'CommandResponse(id={self.id}, status={self.status})'
+
     @abstractmethod
     def get_command_type(self) -> CommandType:
         pass

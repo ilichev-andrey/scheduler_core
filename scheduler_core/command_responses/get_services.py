@@ -15,6 +15,9 @@ class GetServicesResponse(CommandResponse):
 
         self.services = services
 
+    def __str__(self):
+        return f'GetServicesResponse(id={self.id}, status={self.status}, services={self.services})'
+
     def get_command_type(self) -> CommandType:
         return CommandType.GET_SERVICES
 

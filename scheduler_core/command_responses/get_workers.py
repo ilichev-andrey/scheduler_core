@@ -15,6 +15,9 @@ class GetWorkersResponse(CommandResponse):
 
         self.workers = workers
 
+    def __str__(self):
+        return f'GetWorkersResponse(id={self.id}, status={self.status}, workers={self.workers})'
+
     def get_command_type(self) -> CommandType:
         return CommandType.GET_WORKERS
 
