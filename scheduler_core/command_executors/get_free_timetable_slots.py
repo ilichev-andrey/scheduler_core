@@ -53,7 +53,7 @@ class GetFreeTimetableSlotsExecutor(CommandExecutor):
         LoggerWrap().get_logger().info(f'Выполнение команды получения свободных слотов в расписании. {command}')
 
         try:
-            slots = self._timetable_provider.get_for_day(command.day, command.worker)
+            slots = self._timetable_provider.get_by_worker_id(command.worker, command.date_ranges)
         except exceptions.TimetableEntryIsNotFound as e:
             LoggerWrap().get_logger().info(str(e))
             LoggerWrap().get_logger().info('Не найдены свободные слоты в таблице расписания')

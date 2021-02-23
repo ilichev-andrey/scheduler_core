@@ -4,8 +4,8 @@ from datetime import datetime
 from ddt import ddt, idata
 
 from scheduler_core.commands.get_free_timetable_slots import GetFreeTimetableSlotsCommand
+from scheduler_core.containers import DateRanges
 from scheduler_core.enums import CommandType
-
 
 COMMAND_ID = ''
 
@@ -15,12 +15,16 @@ def provider_load_from_dict():
     failed_result = {
         'func_result': False,
         'id': default.id,
-        'day': default.day,
+        'date_ranges': default.date_ranges,
         'services': default.services,
         'worker': default.worker
     }
 
-    timestamp = 1612946942
+    date_ranges = {
+        'start_dt': 1612946942,
+        'end_dt': 1615323600
+    }
+
     cases = [
         # Нет параметра day
         {
@@ -29,41 +33,41 @@ def provider_load_from_dict():
         },
         # Нет параметра services
         {
-            'data': {'day': timestamp, 'worker': 2},
+            'data': {'date_ranges': date_ranges, 'worker': 2},
             'expected': failed_result
         },
         # Нет параметра worker
         {
-            'data': {'day': timestamp, 'services': [1]},
+            'data': {'date_ranges': date_ranges, 'services': [1]},
             'expected': failed_result
         },
         # Тип параметра day должен быть int
         {
-            'data': {'day': str(timestamp), 'services': [1], 'worker': 2},
+            'data': {'date_ranges': str(1234), 'services': [1], 'worker': 2},
             'expected': failed_result
         },
         # Тип параметра services должен быть List
         {
-            'data': {'day': timestamp, 'services': {1}, 'worker': 2},
+            'data': {'date_ranges': date_ranges, 'services': {1}, 'worker': 2},
             'expected': failed_result
         },
         # Не удалось загрузить Command, т.к. отсутствует параметр id
         {
-            'data': {'day': timestamp, 'services': [1], 'worker': 2},
+            'data': {'date_ranges': date_ranges, 'services': [1], 'worker': 2},
             'expected': failed_result
         },
         # Успешная загрузка данных
         {
             'data': {
                 'id': 'command_id',
-                'day': timestamp,
+                'date_ranges': date_ranges,
                 'services': [1],
                 'worker': 2
             },
             'expected': {
                 'func_result': True,
                 'id': 'command_id',
-                'day': datetime(2021, 2, 10, 11, 49, 2),
+                'date_ranges': DateRanges(start_dt=datetime(2021, 2, 10, 11, 49, 2), end_dt=datetime(2021, 3, 10)),
                 'services': frozenset((1,)),
                 'worker': 2
             }
@@ -82,7 +86,7 @@ class TestGetFreeTimetableSlotsCommand(unittest.TestCase):
         command = GetFreeTimetableSlotsCommand(command_id=COMMAND_ID)
         self.assertEqual(expected['func_result'], command.load_from_dict(data))
         self.assertEqual(expected['id'], command.id)
-        self.assertEqual(expected['day'], command.day)
+        self.assertEqual(expected['date_ranges'], command.date_ranges)
         self.assertEqual(expected['services'], command.services)
         self.assertEqual(expected['worker'], command.worker)
 
@@ -90,14 +94,17 @@ class TestGetFreeTimetableSlotsCommand(unittest.TestCase):
         expected = {
             'id': 'command_id',
             'type': CommandType.GET_FREE_TIMETABLE_SLOTS.value,
-            'day': 1612946942,
+            'date_ranges': {
+                'start_dt': 1612946942,
+                'end_dt': 1615323600
+            },
             'services': [1, 2],
             'worker': 3
         }
 
         command = GetFreeTimetableSlotsCommand()
         command.id = 'command_id'
-        command.day = datetime(2021, 2, 10, 11, 49, 2)
+        command.date_ranges = DateRanges(start_dt=datetime(2021, 2, 10, 11, 49, 2), end_dt=datetime(2021, 3, 10))
         command.services = frozenset((1, 2))
         command.worker = 3
         self.assertEqual(expected, command.to_dict())

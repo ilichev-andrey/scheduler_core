@@ -1,7 +1,6 @@
-from datetime import date
 from typing import Dict, Tuple, List
 
-from psycopg2 import extras
+from psycopg2 import extras, Error
 
 from scheduler_core import containers
 from scheduler_core.database import exceptions
@@ -10,22 +9,14 @@ from wrappers import LoggerWrap
 
 
 class TimetableProvider(AbstractProvider):
-    def get(self) -> List[containers.TimetableEntry]:
-        return self._get('''
-             SELECT
-                 id,
-                 worker_id,
-                 client_id,
-                 service_id,
-                 EXTRACT(epoch FROM create_dt) AS create_dt,
-                 EXTRACT(epoch FROM start_dt) AS start_dt,
-                 EXTRACT(epoch FROM end_dt) AS end_dt
-             FROM timetable
-             WHERE client_id ISNULL
-        ''')
+    def get_by_worker_id(self, worker_id: int, date_ranges: containers.DateRanges) -> List[containers.TimetableEntry]:
+        where_end_day = ''
+        if date_ranges.end_dt is not None:
+            with self._db.con.cursor() as cursor:
+                where_end_day = cursor.mogrify('AND start_dt<%(day)s::date+1', {'day': date_ranges.end_dt.date()})
+                where_end_day = str(where_end_day, "utf-8")
 
-    def get_for_day(self, day: date, worker: int) -> List[containers.TimetableEntry]:
-        return self._get('''
+        return self._get(f'''
             SELECT
                 id,
                 worker_id,
@@ -36,12 +27,12 @@ class TimetableProvider(AbstractProvider):
                 EXTRACT(epoch FROM end_dt) AS end_dt
             FROM timetable
             WHERE
-                worker_id=%(worker_id)s
-                AND start_dt>=%(day)s::date
-                AND start_dt<%(day)s::date+1
-        ''', {'worker_id': worker, 'day': day})
+                worker_id=%s
+                AND start_dt>=%s::date
+                {where_end_day}
+        ''', (worker_id, date_ranges.start_dt.date()))
 
-    def get_by_user_id(self, user_id: int) -> List[containers.TimetableEntry]:
+    def get_by_client_id(self, client_id: int) -> List[containers.TimetableEntry]:
         return self._get('''
             SELECT
                 timetable.id,
@@ -52,7 +43,7 @@ class TimetableProvider(AbstractProvider):
             LEFT JOIN services ON services.id = timetable.service_id        
             WHERE
                 client_id=%s
-        ''', (user_id,))
+        ''', (client_id,))
 
     def update_entry(self, timetable_id: int, service_id: int, user_id: int):
         cursor = self._db.con.cursor()
@@ -67,10 +58,14 @@ class TimetableProvider(AbstractProvider):
 
     def _get(self, query: str, values: Dict or Tuple = None):
         cursor: extras.RealDictCursor = self._db.con.cursor(cursor_factory=extras.RealDictCursor)
-        cursor.execute(query, values)
-
-        entries = cursor.fetchall()
-        cursor.close()
+        try:
+            cursor.execute(query, values)
+            entries = cursor.fetchall()
+        except Error as e:
+            LoggerWrap().get_logger().exception(str(e))
+            raise exceptions.BaseDatabaseException('Ошибка при выполнении запроса')
+        finally:
+            cursor.close()
 
         if not entries:
             raise exceptions.TimetableEntryIsNotFound(f'Не найдена ни одна запись в расписании\nquery="{query}"\n'
