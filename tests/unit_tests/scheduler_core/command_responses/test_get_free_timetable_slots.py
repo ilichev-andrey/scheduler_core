@@ -1,8 +1,10 @@
 import unittest
+from datetime import datetime
 
 from ddt import ddt, idata
 
 from scheduler_core.command_responses.get_free_timetable_slots import GetFreeTimetableSlotsResponse
+from scheduler_core.containers import make_timetable_entry, TimetableEntry
 from scheduler_core.enums import CommandStatus, CommandType
 
 
@@ -12,7 +14,14 @@ def provider_load_from_dict():
         'func_result': False,
         'id': default.id,
         'status': default.status,
-        'timetable': default.timetable_ids
+        'timetable': default.timetable_entries
+    }
+
+    timetable_entry = {
+        'id': 123,
+        'worker_id': 345,
+        'create_dt': 1614018000,
+        'start_dt': 1614070852
     }
 
     cases = [
@@ -23,13 +32,13 @@ def provider_load_from_dict():
         },
         # Тип параметра timetable должен быть List
         {
-            'data': {'timetable': {1, 2}},
+            'data': {'timetable': {}},
             'expected': failed_result
         },
         # Не удалось загрузить данные в CommandResponse (отсутствует параметр статус)
         {
             'data': {
-                'timetable': [1, 2],
+                'timetable': [],
                 'id': 'command_id'
             },
             'expected': failed_result
@@ -42,13 +51,13 @@ def provider_load_from_dict():
                     'code': CommandStatus.SUCCESSFUL_EXECUTION.value,
                     'message': CommandStatus.SUCCESSFUL_EXECUTION.name
                 },
-                'timetable': [1, 2]
+                'timetable': [timetable_entry]
             },
             'expected': {
                 'func_result': True,
                 'id': 'command_id',
                 'status': CommandStatus.SUCCESSFUL_EXECUTION,
-                'timetable': [1, 2]
+                'timetable': [make_timetable_entry(**timetable_entry)]
             }
         },
         # Успешная загрузка данных при неудачно выполненной команде
@@ -64,7 +73,7 @@ def provider_load_from_dict():
                 'func_result': True,
                 'id': 'command_id',
                 'status': CommandStatus.NO_FREE_SLOTS_FOUND,
-                'timetable': default.timetable_ids
+                'timetable': default.timetable_entries
             }
         }
     ]
@@ -79,7 +88,7 @@ def provider_to_dict():
             'response': GetFreeTimetableSlotsResponse(
                 command_id='command_id',
                 status=CommandStatus.SUCCESSFUL_EXECUTION,
-                timetable_ids=[123, 456]
+                timetable_entries=[TimetableEntry(id=123, start_dt=datetime(2021, 2, 23, 12))]
             ),
             'expected': {
                 'id': 'command_id',
@@ -88,7 +97,16 @@ def provider_to_dict():
                     'code': CommandStatus.SUCCESSFUL_EXECUTION.value,
                     'message': CommandStatus.SUCCESSFUL_EXECUTION.name
                 },
-                'timetable': [123, 456]
+                'timetable': [{
+                    'id': 123,
+                    'worker_id': None,
+                    'client_id': None,
+                    'service_id': None,
+                    'service_name': None,
+                    'create_dt': None,
+                    'start_dt': 1614070800,
+                    'end_dt': None
+                }]
             }
         },
         # Неуспешное выполнение команды, не отправляются идентификаторы свободных слотов расписания
@@ -121,7 +139,7 @@ class TestGetFreeTimetableSlotsResponse(unittest.TestCase):
         self.assertEqual(expected['func_result'], response.load_from_dict(data))
         self.assertEqual(expected['id'], response.id)
         self.assertEqual(expected['status'], response.status)
-        self.assertEqual(expected['timetable'], response.timetable_ids)
+        self.assertEqual(expected['timetable'], response.timetable_entries)
 
     @idata(provider_to_dict())
     def test_to_dict(self, case_data):

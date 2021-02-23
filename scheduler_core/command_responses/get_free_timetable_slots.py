@@ -1,18 +1,20 @@
 from typing import Dict, List
 
 from scheduler_core.command_responses.command_response import CommandResponse
+from scheduler_core.containers import TimetableEntry, make_timetable_entry
 from scheduler_core.enums import CommandStatus, CommandType
 
 
 class GetFreeTimetableSlotsResponse(CommandResponse):
-    timetable_ids: List[int]
+    timetable_entries: List[TimetableEntry]
 
-    def __init__(self, command_id: str = None, status: CommandStatus = None, timetable_ids: List[int] = None):
+    def __init__(self, command_id: str = None, status: CommandStatus = None,
+                 timetable_entries: List[TimetableEntry] = None):
         super().__init__(command_id=command_id, status=status)
-        if timetable_ids is None:
-            timetable_ids = []
+        if timetable_entries is None:
+            timetable_entries = []
 
-        self.timetable_ids = timetable_ids
+        self.timetable_entries = timetable_entries
 
     def get_command_type(self) -> CommandType:
         return CommandType.GET_FREE_TIMETABLE_SLOTS
@@ -24,8 +26,8 @@ class GetFreeTimetableSlotsResponse(CommandResponse):
         if not isinstance(data['timetable'], List):
             return False
 
-        self.timetable_ids = data['timetable']
+        self.timetable_entries = [make_timetable_entry(**entry_data) for entry_data in data['timetable']]
         return True
 
     def _unload_data(self) -> Dict:
-        return {'timetable': self.timetable_ids}
+        return {'timetable': [timetable_entry.asdict() for timetable_entry in self.timetable_entries]}

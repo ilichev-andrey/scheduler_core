@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict, List
+from typing import Dict, FrozenSet, List
 
 from scheduler_core.commands.command import Command
 from scheduler_core.enums import CommandType
@@ -7,10 +7,11 @@ from scheduler_core.enums import CommandType
 
 class GetFreeTimetableSlotsCommand(Command):
     day: datetime
-    services: frozenset
+    services: FrozenSet[int]
     worker: int
 
-    def __init__(self, command_id: str = None, day: datetime = None, services: frozenset = None, worker: int = None):
+    def __init__(self, command_id: str = None, day: datetime = None, services: FrozenSet[int] = None,
+                 worker: int = None):
         super().__init__(command_id=command_id)
         if day is None:
             day = datetime.fromtimestamp(0)

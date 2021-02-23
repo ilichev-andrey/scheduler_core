@@ -57,6 +57,17 @@ class TimetableEntry(NamedTuple):
     start_dt: datetime = None
     end_dt: datetime = None
 
+    def asdict(self) -> Dict:
+        data = self._asdict()
+        if self.create_dt is not None:
+            data['create_dt'] = int(self.create_dt.timestamp())
+        if self.start_dt is not None:
+            data['start_dt'] = int(self.start_dt.timestamp())
+        if self.end_dt is not None:
+            data['end_dt'] = int(self.end_dt.timestamp())
+
+        return data
+
 
 def make_timetable_entry(**kwargs):
     create_dt = kwargs.pop('create_dt', None)

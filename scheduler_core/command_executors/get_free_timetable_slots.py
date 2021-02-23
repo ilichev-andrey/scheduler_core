@@ -71,5 +71,5 @@ class GetFreeTimetableSlotsExecutor(CommandExecutor):
         return GetFreeTimetableSlotsResponse(
             command_id=command.id,
             status=CommandStatus.SUCCESSFUL_EXECUTION,
-            timetable_ids=[slot.id for slot in slots]
+            timetable_entries=slots
         )
