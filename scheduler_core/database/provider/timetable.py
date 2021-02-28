@@ -51,6 +51,7 @@ class TimetableProvider(AbstractProvider):
         entry_ids = tuple(entry_ids)
         service_ids = tuple(service_ids)
 
+        # Создание запроса и проверка, что слоты в расписании не заняты
         data = {'entry_ids': entry_ids, 'service_ids': service_ids, 'client_id': client_id}
         if not entry_ids or len(entry_ids) != len(service_ids):
             raise exceptions.InvalidInputParameters(
@@ -75,6 +76,7 @@ class TimetableProvider(AbstractProvider):
         if not entries or len(entries) != len(entry_ids):
             raise exceptions.EntryAlreadyExists('Слоты в расписании уже заняты')
 
+        # Создание запроса и запись пользователя в указанные слоты
         values = []
         for (entry_id, service_id) in zip(entry_ids, service_ids):
             values.append(f'({entry_id}, {client_id}, {service_id})')

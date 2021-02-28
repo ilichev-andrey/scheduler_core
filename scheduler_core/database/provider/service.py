@@ -1,6 +1,6 @@
 from typing import List, Iterable
 
-from psycopg2 import extras
+from psycopg2 import extras, Error
 
 from scheduler_core import containers
 from scheduler_core.containers import Service
@@ -29,23 +29,25 @@ class ServiceProvider(AbstractProvider):
     def multi_add(self, services: List[Service]) -> None:
         service_data = services[0].asdict()
         service_data.pop('id')
-        keys = ','.join(service_data.keys())
-        values = ','.join(f"('{service.name.lower()}', {service.execution_time_minutes})" for service in services)
-        self._add(f'''
-            INSERT INTO {self._TABLE_NAME} ({keys})
-            VALUES {values}
-        ''')
+        self._multi_add(
+            table_name=self._TABLE_NAME,
+            keys=service_data.keys(),
+            values=((service.name.lower(), service.execution_time_minutes) for service in services)
+        )
 
     def _get(self, where: str = '') -> List[containers.Service]:
         cursor = self._db.con.cursor(cursor_factory=extras.RealDictCursor)
-        cursor.execute(f'''
-            SELECT id, name, execution_time_minutes
-            FROM {self._TABLE_NAME}
-            {where}
-        ''')
-
-        services = cursor.fetchall()
-        cursor.close()
+        try:
+            cursor.execute(f'''
+                SELECT id, name, execution_time_minutes
+                FROM {self._TABLE_NAME}
+                {where}
+            ''')
+            services = cursor.fetchall()
+        except Error as e:
+            raise exceptions.BaseDatabaseException(str(e))
+        finally:
+            cursor.close()
 
         if not services:
             raise exceptions.ServiceIsNotFound(f'Не найдены услуги, where={where}')

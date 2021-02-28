@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Iterable
 
 from psycopg2 import Error, errorcodes
 
@@ -27,3 +27,14 @@ class AbstractProvider(object):
         finally:
             self._db.con.rollback()
             cursor.close()
+
+    def _multi_add(self, table_name, keys: Iterable, values: Iterable) -> None:
+        def join_values(_values: Iterable) -> str:
+            return '({})'.format(','.join(_values))
+
+        keys = ','.join(keys)
+        values = ','.join(join_values(_values) for _values in values)
+        self._add(f'''
+            INSERT INTO {table_name} ({keys})
+            VALUES {values}
+        ''')

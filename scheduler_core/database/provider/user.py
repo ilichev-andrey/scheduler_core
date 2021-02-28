@@ -1,6 +1,6 @@
 from typing import List
 
-from psycopg2 import extras
+from psycopg2 import extras, Error
 
 from scheduler_core import containers
 from scheduler_core.database import exceptions
@@ -47,14 +47,17 @@ class UserProvider(AbstractProvider):
 
     def _get(self, where: str = '') -> containers.User:
         cursor = self._db.con.cursor(cursor_factory=extras.RealDictCursor)
-        cursor.execute(f'''
-            SELECT id, type, first_name, last_name, phone_number, telegram_id, telegram_name, viber_id, viber_name
-            FROM {self._TABLE_NAME}
-            {where}
-        ''')
-
-        user = cursor.fetchone()
-        cursor.close()
+        try:
+            cursor.execute(f'''
+                SELECT id, type, first_name, last_name, phone_number, telegram_id, telegram_name, viber_id, viber_name
+                FROM {self._TABLE_NAME}
+                {where}
+            ''')
+            user = cursor.fetchone()
+        except Error as e:
+            raise exceptions.BaseDatabaseException(str(e))
+        finally:
+            cursor.close()
 
         if not user:
             raise exceptions.UserIsNotFound(f'Пользователь не найден, where="{where}"')
@@ -64,14 +67,17 @@ class UserProvider(AbstractProvider):
 
     def get_workers(self) -> List[containers.User]:
         cursor = self._db.con.cursor(cursor_factory=extras.RealDictCursor)
-        cursor.execute(f'''
-            SELECT id, type, first_name, last_name, phone_number, telegram_id, telegram_name, viber_id, viber_name
-            FROM {self._TABLE_NAME}
-            WHERE type=%s
-        ''', (UserType.WORKER.value,))
-
-        users = cursor.fetchall()
-        cursor.close()
+        try:
+            cursor.execute(f'''
+                SELECT id, type, first_name, last_name, phone_number, telegram_id, telegram_name, viber_id, viber_name
+                FROM {self._TABLE_NAME}
+                WHERE type=%s
+            ''', (UserType.WORKER.value,))
+            users = cursor.fetchall()
+        except Error as e:
+            raise exceptions.BaseDatabaseException(str(e))
+        finally:
+            cursor.close()
 
         if not users:
             raise exceptions.UserIsNotFound(f'Не найдены работники')
