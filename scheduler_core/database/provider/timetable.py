@@ -34,17 +34,24 @@ class TimetableProvider(AbstractProvider):
                 {where_end_day}
         ''', (worker_id, date_ranges.start_dt.date()))
 
-    def get_by_client_id(self, client_id: int) -> List[containers.TimetableEntry]:
+    def get_by_client_id(self, client_id: int, limit: int = None) -> List[containers.TimetableEntry]:
+        limit_str = ''
+        if limit is not None:
+            limit_str = f'LIMIT {int(limit)}'
+
         return self._get(f'''
             SELECT
                 timetable.id,
                 EXTRACT(epoch FROM timetable.start_dt) AS start_dt,
                 EXTRACT(epoch FROM end_dt) AS end_dt,
+                timetable.service_id,
                 services.name AS service_name
             FROM {self._TABLE_NAME}
             LEFT JOIN services ON services.id = timetable.service_id        
             WHERE
                 client_id=%s
+            ORDER BY timetable.id
+            {limit_str}
         ''', (client_id,))
 
     def sign_up_client(self, entry_ids: Iterable[int], services: List[containers.Service], client_id: int) -> None:

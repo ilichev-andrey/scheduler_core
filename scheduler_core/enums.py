@@ -12,6 +12,7 @@ class CommandType(Enum):
     ADD_USER = 7
     GET_USER = 8
     TAKE_TIMETABLE_SLOTS = 9
+    GET_CLIENT_TIMETABLE = 10
 
 
 class CommandStatus(Enum):
@@ -23,6 +24,7 @@ class CommandStatus(Enum):
     USER_ALREADY_EXISTS = 4
     USER_IS_NOT_FOUND = 5
     NO_FREE_SLOTS_FOUND = 6
+    NO_TIMETABLE_ENTRIES_FOUND = 7
 
 
 class UserType(Enum):
