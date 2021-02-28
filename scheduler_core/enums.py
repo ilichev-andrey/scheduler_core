@@ -13,6 +13,7 @@ class CommandType(Enum):
     GET_USER = 8
     TAKE_TIMETABLE_SLOTS = 9
     GET_CLIENT_TIMETABLE = 10
+    UPDATE_USER = 11
 
 
 class CommandStatus(Enum):
@@ -25,6 +26,7 @@ class CommandStatus(Enum):
     USER_IS_NOT_FOUND = 5
     NO_FREE_SLOTS_FOUND = 6
     NO_TIMETABLE_ENTRIES_FOUND = 7
+    INCORRECT_USER_DATA = 8
 
 
 class UserType(Enum):

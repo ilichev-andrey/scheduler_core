@@ -8,6 +8,7 @@ from scheduler_core.commands.get_services import GetServicesCommand
 from scheduler_core.commands.get_user import GetUserCommand
 from scheduler_core.commands.get_workers import GetWorkersCommand
 from scheduler_core.commands.take_timetable_slots import TakeTimetableSlotsCommand
+from scheduler_core.commands.update_user import UpdateUserCommand
 from scheduler_core.enums import CommandType
 
 
@@ -33,5 +34,7 @@ def create(command_type: CommandType) -> Command:
         return TakeTimetableSlotsCommand()
     if command_type == CommandType.GET_CLIENT_TIMETABLE:
         return GetClientTimetableCommand()
+    if command_type == CommandType.UPDATE_USER:
+        return UpdateUserCommand()
 
     raise exceptions.UnknownCommand(f'Не поддерживается команда данного типа: {command_type}')

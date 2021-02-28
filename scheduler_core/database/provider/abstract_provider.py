@@ -7,6 +7,18 @@ from scheduler_core.database.db import DB
 from wrappers import LoggerWrap
 
 
+def filter_not_none_values(data: Dict) -> Dict:
+    return {key: val for key, val in data.items() if val is not None}
+
+
+def create_set_values_str(data: Dict) -> str:
+    if not data:
+        return ''
+
+    set_str = ','.join((f'{key}=%({key})s' for key in data))
+    return f'SET {set_str}'
+
+
 class AbstractProvider(object):
     _db: DB
 
@@ -28,7 +40,7 @@ class AbstractProvider(object):
             self._db.con.rollback()
             cursor.close()
 
-    def _multi_add(self, table_name, keys: Iterable, values: Iterable) -> None:
+    def _multi_add(self, table_name: str, keys: Iterable, values: Iterable) -> None:
         def join_values(_values: Iterable) -> str:
             return '({})'.format(','.join(_values))
 
@@ -38,3 +50,21 @@ class AbstractProvider(object):
             INSERT INTO {table_name} ({keys})
             VALUES {values}
         ''')
+
+    def _update_data(self, table_name: str, entry_id: int, data: Dict) -> None:
+        data = filter_not_none_values(data)
+        data['id'] = entry_id
+        cursor = self._db.con.cursor()
+        try:
+            cursor.execute(f'''
+                UPDATE {table_name} 
+                {create_set_values_str(data)}
+                WHERE {table_name}.id=%(id)s
+            ''', data)
+        except Error as e:
+            LoggerWrap().get_logger().exception(str(e))
+            raise exceptions.BaseDatabaseException(f'Не удалось обновить данные. {data}')
+        else:
+            self._db.con.commit()
+        finally:
+            cursor.close()

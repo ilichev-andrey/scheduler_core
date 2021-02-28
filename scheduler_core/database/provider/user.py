@@ -83,3 +83,9 @@ class UserProvider(AbstractProvider):
             raise exceptions.UserIsNotFound(f'Не найдены работники')
 
         return [containers.make_user(**user) for user in users]
+
+    def update(self, user: containers.User):
+        data = user.asdict()
+        data.pop('id', None)
+        data.pop('type', None)
+        self._update_data(self._TABLE_NAME, user.id, data)

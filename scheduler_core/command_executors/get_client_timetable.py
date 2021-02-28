@@ -15,7 +15,7 @@ class GetClientTimetableExecutor(CommandExecutor):
         self._timetable_provider = TimetableProvider(db)
 
     async def execute(self, command: GetClientTimetableCommand) -> GetClientTimetableResponse:
-        LoggerWrap().get_logger().info(f'Выполнение команды получения свободных слотов в расписании. {command}')
+        LoggerWrap().get_logger().info(f'Выполнение команды получения записей клиента. {command}')
 
         try:
             entries = self._timetable_provider.get_by_client_id(command.client, command.limit)
