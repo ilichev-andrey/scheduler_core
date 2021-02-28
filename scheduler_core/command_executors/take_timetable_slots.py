@@ -21,8 +21,9 @@ class TakeTimetableSlotsExecutor(CommandExecutor):
     async def execute(self, command: TakeTimetableSlotsCommand) -> CommandResponse:
         LoggerWrap().get_logger().info(f'Выполнение команды записи клиента. {command}')
 
+        services = self._service_provider.get_by_ids(command.services)
         try:
-            self._timetable_provider.sign_up_client(command.timetable_entries, command.services, command.client)
+            self._timetable_provider.sign_up_client(command.timetable_entries, services, command.client)
         except exceptions.EntryAlreadyExists as e:
             LoggerWrap().get_logger().info(str(e))
             LoggerWrap().get_logger().info('Не удалось записать клиента')

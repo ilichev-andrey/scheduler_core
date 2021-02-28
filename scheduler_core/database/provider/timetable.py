@@ -47,44 +47,34 @@ class TimetableProvider(AbstractProvider):
                 client_id=%s
         ''', (client_id,))
 
-    def sign_up_client(self, entry_ids: Iterable[int], service_ids: Iterable[int], client_id: int) -> None:
+    def sign_up_client(self, entry_ids: Iterable[int], services: List[containers.Service], client_id: int) -> None:
         entry_ids = tuple(entry_ids)
-        service_ids = tuple(service_ids)
+        services = tuple(services)
+        service_ids = [service.id for service in services]
 
-        # Создание запроса и проверка, что слоты в расписании не заняты
         data = {'entry_ids': entry_ids, 'service_ids': service_ids, 'client_id': client_id}
         if not entry_ids or len(entry_ids) != len(service_ids):
             raise exceptions.InvalidInputParameters(
                 f'Параметры "entry_ids" и "service_ids" должны быть одинаковой размерности и не пустыми. {data}'
             )
 
-        entry_ids_str = ','.join((str(entry_id) for entry_id in entry_ids))
-        select_query = f'''
-            SELECT id
-            FROM {self._TABLE_NAME}     
-            WHERE id IN ({entry_ids_str}) AND client_id IS NULL 
-        '''
-        cursor = self._db.con.cursor()
-        try:
-            cursor.execute(select_query)
-            entries = cursor.fetchall()
-        except Error as e:
-            LoggerWrap().get_logger().exception(str(e))
-            cursor.close()
-            raise exceptions.BaseDatabaseException(f'Не удалось проверить слоты перед записью пользователя. {data}')
+        cursor = self._db.con.cursor(cursor_factory=extras.RealDictCursor)
 
+        # Проверка, что слоты в расписании не заняты
+        entries = self._get_slots_by_ids(entry_ids=entry_ids, free_only=True, cursor=cursor)
         if not entries or len(entries) != len(entry_ids):
             raise exceptions.EntryAlreadyExists('Слоты в расписании уже заняты')
 
         # Создание запроса и запись пользователя в указанные слоты
         values = []
-        for (entry_id, service_id) in zip(entry_ids, service_ids):
-            values.append(f'({entry_id}, {client_id}, {service_id})')
+        for (entry, service) in zip(entries, services):
+            values.append(f"({entry.id}, {client_id}, {service.id}, '{service.execution_time_minutes} minutes')")
 
         values = ','.join(values)
         update_query = f'''
-            UPDATE {self._TABLE_NAME} SET client_id=client_id_new, service_id=service_id_new
-            FROM (VALUES {values}) AS tmp(id, client_id_new, service_id_new)
+            UPDATE {self._TABLE_NAME} 
+            SET client_id=client_id_new, service_id=service_id_new, end_dt=start_dt + execution_time_minutes::INTERVAL
+            FROM (VALUES {values}) AS tmp(id, client_id_new, service_id_new, execution_time_minutes)
             WHERE timetable.id=tmp.id
         '''
         try:
@@ -113,4 +103,42 @@ class TimetableProvider(AbstractProvider):
                                                       f'values={values}')
 
         LoggerWrap().get_logger().info(f'Получены записи из таблицы расписания: {entries}')
+        return [containers.make_timetable_entry(**entry) for entry in entries]
+
+    def _get_slots_by_ids(self, entry_ids: Iterable[int], free_only: bool = False,
+                          cursor: extras.RealDictCursor = None) -> List[containers.TimetableEntry]:
+        entry_ids_str = ','.join((str(entry_id) for entry_id in entry_ids))
+        where = f'WHERE id IN ({entry_ids_str})'
+        if free_only:
+            where = f'{where} AND client_id IS NULL'
+
+        select_query = f'''
+            SELECT 
+                id,
+                worker_id,
+                client_id,
+                service_id,
+                EXTRACT(epoch FROM create_dt) AS create_dt,
+                EXTRACT(epoch FROM start_dt) AS start_dt,
+                EXTRACT(epoch FROM end_dt) AS end_dt
+            FROM {self._TABLE_NAME}     
+            {where}
+        '''
+
+        cursor_is_created = False
+        if cursor is None:
+            cursor = self._db.con.cursor(cursor_factory=extras.RealDictCursor)
+            cursor_is_created = True
+
+        try:
+            cursor.execute(select_query)
+            entries = cursor.fetchall()
+        except Error as e:
+            LoggerWrap().get_logger().exception(str(e))
+            cursor.close()
+            raise exceptions.BaseDatabaseException(f'Не удалось получить слоты расписания. select_query={select_query}')
+
+        if cursor_is_created:
+            cursor.close()
+
         return [containers.make_timetable_entry(**entry) for entry in entries]
