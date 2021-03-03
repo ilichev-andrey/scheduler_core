@@ -3,10 +3,12 @@ import unittest
 from ddt import ddt, idata
 
 from scheduler_core.command_responses.add_user import AddUserResponse
-from scheduler_core.enums import CommandStatus, CommandType
+from scheduler_core.containers import User
+from scheduler_core.enums import CommandStatus, CommandType, UserType
 
 
 def provider_load_from_dict():
+    default = AddUserResponse()
     cases = [
         # Успешная загрузка данных
         {
@@ -15,12 +17,34 @@ def provider_load_from_dict():
                 'status': {
                     'code': CommandStatus.SUCCESSFUL_EXECUTION.value,
                     'message': CommandStatus.SUCCESSFUL_EXECUTION.name
+                },
+                'user': {
+                    'id': 789,
+                    'type': UserType.CLIENT.value,
+                    'first_name': 'first_name',
+                    'last_name': 'last_name',
+                    'phone_number': '88003000600',
+                    'telegram_id': 12345,
+                    'telegram_name': 'telegram_name',
+                    'viber_id': 54321,
+                    'viber_name': 'viber_name'
                 }
             },
             'expected': {
                 'func_result': True,
                 'id': 'command_id',
-                'status': CommandStatus.SUCCESSFUL_EXECUTION
+                'status': CommandStatus.SUCCESSFUL_EXECUTION,
+                'user': User(
+                    id=789,
+                    type=UserType.CLIENT,
+                    first_name='first_name',
+                    last_name='last_name',
+                    phone_number='88003000600',
+                    telegram_id=12345,
+                    telegram_name='telegram_name',
+                    viber_id=54321,
+                    viber_name='viber_name'
+                )
             }
         },
         # Успешная загрузка данных при неудачно выполненной команде
@@ -35,7 +59,8 @@ def provider_load_from_dict():
             'expected': {
                 'func_result': True,
                 'id': 'command_id',
-                'status': CommandStatus.USER_ALREADY_EXISTS
+                'status': CommandStatus.USER_ALREADY_EXISTS,
+                'user': default.user
             }
         }
     ]
@@ -49,7 +74,18 @@ def provider_to_dict():
         {
             'response': AddUserResponse(
                 command_id='command_id',
-                status=CommandStatus.SUCCESSFUL_EXECUTION
+                status=CommandStatus.SUCCESSFUL_EXECUTION,
+                user=User(
+                    id=789,
+                    type=UserType.CLIENT,
+                    first_name='first_name',
+                    last_name='last_name',
+                    phone_number='88003000600',
+                    telegram_id=12345,
+                    telegram_name='telegram_name',
+                    viber_id=54321,
+                    viber_name='viber_name'
+                )
             ),
             'expected': {
                 'id': 'command_id',
@@ -57,10 +93,21 @@ def provider_to_dict():
                 'status': {
                     'code': CommandStatus.SUCCESSFUL_EXECUTION.value,
                     'message': CommandStatus.SUCCESSFUL_EXECUTION.name
+                },
+                'user': {
+                    'id': 789,
+                    'type': UserType.CLIENT.value,
+                    'first_name': 'first_name',
+                    'last_name': 'last_name',
+                    'phone_number': '88003000600',
+                    'telegram_id': 12345,
+                    'telegram_name': 'telegram_name',
+                    'viber_id': 54321,
+                    'viber_name': 'viber_name'
                 }
             }
         },
-        # Неуспешное выполнение команды, не отправляется информация об услугах
+        # Неуспешное выполнение команды, не отправляется информация о пользователе
         {
             'response': AddUserResponse(
                 command_id='command_id',
