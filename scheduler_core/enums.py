@@ -28,7 +28,8 @@ class CommandStatus(Enum):
     USER_IS_NOT_FOUND = 5
     NO_FREE_SLOTS_FOUND = 6
     NO_TIMETABLE_ENTRIES_FOUND = 7
-    INCORRECT_USER_DATA = 8
+    NO_SERVICES_FOUND = 8
+    INCORRECT_USER_DATA = 9
 
 
 class UserType(Enum):

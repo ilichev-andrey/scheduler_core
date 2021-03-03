@@ -63,14 +63,14 @@ def provider_load_from_dict():
             'data': {
                 'id': 'command_id',
                 'status': {
-                    'code': CommandStatus.INTERNAL_ERROR.value,
-                    'message': CommandStatus.INTERNAL_ERROR.name
+                    'code': CommandStatus.NO_SERVICES_FOUND.value,
+                    'message': CommandStatus.NO_SERVICES_FOUND.name
                 }
             },
             'expected': {
                 'func_result': True,
                 'id': 'command_id',
-                'status': CommandStatus.INTERNAL_ERROR,
+                'status': CommandStatus.NO_SERVICES_FOUND,
                 'services': default.services
             }
         }
@@ -110,14 +110,14 @@ def provider_to_dict():
         {
             'response': GetServicesResponse(
                 command_id='command_id',
-                status=CommandStatus.INTERNAL_ERROR
+                status=CommandStatus.NO_SERVICES_FOUND
             ),
             'expected': {
                 'id': 'command_id',
                 'type': CommandType.GET_SERVICES.value,
                 'status': {
-                    'code': CommandStatus.INTERNAL_ERROR.value,
-                    'message': CommandStatus.INTERNAL_ERROR.name
+                    'code': CommandStatus.NO_SERVICES_FOUND.value,
+                    'message': CommandStatus.NO_SERVICES_FOUND.name
                 }
             }
         }
