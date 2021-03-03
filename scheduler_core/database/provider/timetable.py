@@ -15,22 +15,27 @@ class TimetableProvider(AbstractProvider):
         where_end_day = ''
         if date_ranges.end_dt is not None:
             with self._db.con.cursor() as cursor:
-                where_end_day = cursor.mogrify('AND start_dt<%(day)s::date+1', {'day': date_ranges.end_dt.date()})
+                where_end_day = cursor.mogrify(
+                    query='AND timetable.start_dt<%(day)s::date+1',
+                    vars={'day': date_ranges.end_dt.date()}
+                )
                 where_end_day = str(where_end_day, "utf-8")
 
         return self._get(f'''
             SELECT
-                id,
-                worker_id,
-                client_id,
-                service_id,
-                EXTRACT(epoch FROM create_dt) AS create_dt,
-                EXTRACT(epoch FROM start_dt) AS start_dt,
-                EXTRACT(epoch FROM end_dt) AS end_dt
+                timetable.id,
+                timetable.worker_id,
+                timetable.client_id,
+                timetable.service_id,
+                EXTRACT(epoch FROM timetable.create_dt) AS create_dt,
+                EXTRACT(epoch FROM timetable.start_dt) AS start_dt,
+                EXTRACT(epoch FROM timetable.end_dt) AS end_dt,
+                services.name AS service_name
             FROM {self._TABLE_NAME}
+            LEFT JOIN services ON services.id = timetable.service_id
             WHERE
-                worker_id=%s
-                AND start_dt>=%s::date
+                timetable.worker_id=%s
+                AND timetable.start_dt>=%s::date
                 {where_end_day}
         ''', (worker_id, date_ranges.start_dt.date()))
 
@@ -43,13 +48,13 @@ class TimetableProvider(AbstractProvider):
             SELECT
                 timetable.id,
                 EXTRACT(epoch FROM timetable.start_dt) AS start_dt,
-                EXTRACT(epoch FROM end_dt) AS end_dt,
+                EXTRACT(epoch FROM timetable.end_dt) AS end_dt,
                 timetable.service_id,
                 services.name AS service_name
             FROM {self._TABLE_NAME}
             LEFT JOIN services ON services.id = timetable.service_id        
             WHERE
-                client_id=%s
+                timetable.client_id=%s
             ORDER BY timetable.id
             {limit_str}
         ''', (client_id,))
