@@ -14,6 +14,7 @@ class CommandType(Enum):
     TAKE_TIMETABLE_SLOTS = 9
     GET_CLIENT_TIMETABLE = 10
     UPDATE_USER = 11
+    GET_WORKER_TIMETABLE = 12
 
 
 class CommandStatus(Enum):
@@ -33,3 +34,16 @@ class UserType(Enum):
     UNKNOWN = -1
     WORKER = 0
     CLIENT = 1
+
+
+class TimeType(Enum):
+    UNKNOWN = -1
+    PAST = 0
+    FUTURE = 1
+
+
+class TimeLimit(Enum):
+    UNKNOWN = -1
+    DAY = 0
+    WEEK = 1
+    MONTH = 2

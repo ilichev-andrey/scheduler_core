@@ -3,13 +3,13 @@ from datetime import datetime
 
 from ddt import ddt, idata
 
-from scheduler_core.command_responses.get_client_timetable import GetClientTimetableResponse
+from scheduler_core.command_responses.get_worker_timetable import GetWorkerTimetableResponse
 from scheduler_core.containers import make_timetable_entry, TimetableEntry
 from scheduler_core.enums import CommandStatus, CommandType
 
 
 def provider_load_from_dict():
-    default = GetClientTimetableResponse()
+    default = GetWorkerTimetableResponse()
     failed_result = {
         'func_result': False,
         'id': default.id,
@@ -65,14 +65,14 @@ def provider_load_from_dict():
             'data': {
                 'id': 'command_id',
                 'status': {
-                    'code': CommandStatus.NO_TIMETABLE_ENTRIES_FOUND.value,
-                    'message': CommandStatus.NO_TIMETABLE_ENTRIES_FOUND.name
+                    'code': CommandStatus.NO_FREE_SLOTS_FOUND.value,
+                    'message': CommandStatus.NO_FREE_SLOTS_FOUND.name
                 }
             },
             'expected': {
                 'func_result': True,
                 'id': 'command_id',
-                'status': CommandStatus.NO_TIMETABLE_ENTRIES_FOUND,
+                'status': CommandStatus.NO_FREE_SLOTS_FOUND,
                 'timetable': default.timetable_entries
             }
         }
@@ -85,14 +85,14 @@ def provider_to_dict():
     cases = [
         # Успешное выполнение команды, отправляются все данные
         {
-            'response': GetClientTimetableResponse(
+            'response': GetWorkerTimetableResponse(
                 command_id='command_id',
                 status=CommandStatus.SUCCESSFUL_EXECUTION,
                 timetable_entries=[TimetableEntry(id=123, start_dt=datetime(2021, 2, 23, 12))]
             ),
             'expected': {
                 'id': 'command_id',
-                'type': CommandType.GET_CLIENT_TIMETABLE.value,
+                'type': CommandType.GET_WORKER_TIMETABLE.value,
                 'status': {
                     'code': CommandStatus.SUCCESSFUL_EXECUTION.value,
                     'message': CommandStatus.SUCCESSFUL_EXECUTION.name
@@ -111,16 +111,16 @@ def provider_to_dict():
         },
         # Неуспешное выполнение команды, не отправляются записи из расписания
         {
-            'response': GetClientTimetableResponse(
+            'response': GetWorkerTimetableResponse(
                 command_id='command_id',
-                status=CommandStatus.NO_TIMETABLE_ENTRIES_FOUND
+                status=CommandStatus.INTERNAL_ERROR
             ),
             'expected': {
                 'id': 'command_id',
-                'type': CommandType.GET_CLIENT_TIMETABLE.value,
+                'type': CommandType.GET_WORKER_TIMETABLE.value,
                 'status': {
-                    'code': CommandStatus.NO_TIMETABLE_ENTRIES_FOUND.value,
-                    'message': CommandStatus.NO_TIMETABLE_ENTRIES_FOUND.name
+                    'code': CommandStatus.INTERNAL_ERROR.value,
+                    'message': CommandStatus.INTERNAL_ERROR.name
                 }
             }
         }
@@ -130,12 +130,12 @@ def provider_to_dict():
 
 
 @ddt
-class TestGetClientTimetableResponse(unittest.TestCase):
+class TestGetWorkerTimetableResponse(unittest.TestCase):
     @idata(provider_load_from_dict())
     def test_load_from_dict(self, case_data):
         data, expected = case_data['data'], case_data['expected']
 
-        response = GetClientTimetableResponse()
+        response = GetWorkerTimetableResponse()
         self.assertEqual(expected['func_result'], response.load_from_dict(data))
         self.assertEqual(expected['id'], response.id)
         self.assertEqual(expected['status'], response.status)

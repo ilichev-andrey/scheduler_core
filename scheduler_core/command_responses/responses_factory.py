@@ -6,6 +6,7 @@ from scheduler_core.command_responses.get_client_timetable import GetClientTimet
 from scheduler_core.command_responses.get_free_timetable_slots import GetFreeTimetableSlotsResponse
 from scheduler_core.command_responses.get_services import GetServicesResponse
 from scheduler_core.command_responses.get_user import GetUserResponse
+from scheduler_core.command_responses.get_worker_timetable import GetWorkerTimetableResponse
 from scheduler_core.command_responses.get_workers import GetWorkersResponse
 from scheduler_core.command_responses.take_timetable_slots import TakeTimetableSlotsResponse
 from scheduler_core.command_responses.update_user import UpdateUserResponse
@@ -36,5 +37,7 @@ def create(command_type: CommandType) -> CommandResponse:
         return GetClientTimetableResponse()
     if command_type == CommandType.UPDATE_USER:
         return UpdateUserResponse()
+    if command_type == CommandType.GET_WORKER_TIMETABLE:
+        return GetWorkerTimetableResponse()
 
     raise exceptions.UnknownCommand(f'Не поддерживается команда данного типа: {command_type}')
