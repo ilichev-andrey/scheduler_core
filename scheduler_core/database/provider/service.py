@@ -24,7 +24,7 @@ class ServiceProvider(AbstractProvider):
         self._add(f'''
             INSERT INTO {self._TABLE_NAME} (name, execution_time_minutes)
             VALUES (%(name)s, %(execution_time_minutes)s)
-        ''', service.asdict())
+        ''', _service.asdict())
 
     def multi_add(self, services: List[Service]) -> None:
         service_data = services[0].asdict()
@@ -32,7 +32,7 @@ class ServiceProvider(AbstractProvider):
         self._multi_add(
             table_name=self._TABLE_NAME,
             keys=service_data.keys(),
-            values=((service.name.lower(), service.execution_time_minutes) for service in services)
+            values=((f"'{service.name.lower()}'", service.execution_time_minutes) for service in services)
         )
 
     def delete(self, ids: Iterable[int]):

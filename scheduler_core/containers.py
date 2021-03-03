@@ -61,9 +61,9 @@ def make_user(**kwargs) -> User:
 
 
 class Service(NamedTuple):
-    id: int or None
     name: str
     execution_time_minutes: int
+    id: int = None
 
     def asdict(self) -> Dict:
         return self._asdict()
