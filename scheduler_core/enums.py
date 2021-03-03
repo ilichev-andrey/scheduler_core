@@ -15,6 +15,7 @@ class CommandType(Enum):
     GET_CLIENT_TIMETABLE = 10
     UPDATE_USER = 11
     GET_WORKER_TIMETABLE = 12
+    DELETE_SERVICES = 13
 
 
 class CommandStatus(Enum):

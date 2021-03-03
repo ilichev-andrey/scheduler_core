@@ -29,9 +29,9 @@ class TestGetServicesCommand(unittest.TestCase):
     def test_load_from_dict(self, case_data):
         data, expected = case_data['data'], case_data['expected']
 
-        response = GetServicesCommand()
-        self.assertEqual(expected['func_result'], response.load_from_dict(data))
-        self.assertEqual(expected['id'], response.id)
+        command = GetServicesCommand()
+        self.assertEqual(expected['func_result'], command.load_from_dict(data))
+        self.assertEqual(expected['id'], command.id)
 
     def test_to_dict(self):
         expected = {
@@ -39,9 +39,9 @@ class TestGetServicesCommand(unittest.TestCase):
             'type': CommandType.GET_SERVICES.value
         }
 
-        response = GetServicesCommand()
-        response.id = 'command_id'
-        self.assertEqual(expected, response.to_dict())
+        command = GetServicesCommand()
+        command.id = 'command_id'
+        self.assertEqual(expected, command.to_dict())
 
 
 if __name__ == '__main__':

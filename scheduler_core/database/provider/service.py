@@ -35,6 +35,24 @@ class ServiceProvider(AbstractProvider):
             values=((service.name.lower(), service.execution_time_minutes) for service in services)
         )
 
+    def delete(self, ids: Iterable[int]):
+        values = ','.join((f'({entry_id})' for entry_id in ids))
+        cursor = self._db.con.cursor()
+        try:
+            cursor.execute(f'''
+                UPDATE {self._TABLE_NAME} 
+                SET "enable"=FALSE
+                FROM (VALUES {values}) AS tmp(id)
+                WHERE {self._TABLE_NAME}.id=tmp.id
+            ''')
+        except Error as e:
+            self._db.con.rollback()
+            raise exceptions.BaseDatabaseException(str(e))
+        else:
+            self._db.con.commit()
+        finally:
+            cursor.close()
+
     def _get(self, where: str = '') -> List[containers.Service]:
         cursor = self._db.con.cursor(cursor_factory=extras.RealDictCursor)
         try:

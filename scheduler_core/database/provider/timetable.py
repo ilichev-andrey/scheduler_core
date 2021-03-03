@@ -92,6 +92,7 @@ class TimetableProvider(AbstractProvider):
         try:
             cursor.execute(update_query)
         except Error as e:
+            self._db.con.rollback()
             LoggerWrap().get_logger().exception(str(e))
             raise exceptions.BaseDatabaseException(f'Не удалось записать пользователя. {data}')
         else:

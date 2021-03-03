@@ -29,15 +29,16 @@ class AbstractProvider(object):
         cursor = self._db.con.cursor()
         try:
             cursor.execute(query, data)
-            self._db.con.commit()
         except Error as e:
+            self._db.con.rollback()
             if e.pgcode == errorcodes.UNIQUE_VIOLATION:
                 raise exceptions.EntryAlreadyExists(f'Запись уже существует')
 
             LoggerWrap().get_logger().exception(f'query="{query}"\ndata={data}')
             raise exceptions.BaseDatabaseException(str(e))
+        else:
+            self._db.con.commit()
         finally:
-            self._db.con.rollback()
             cursor.close()
 
     def _multi_add(self, table_name: str, keys: Iterable, values: Iterable) -> None:
@@ -62,6 +63,7 @@ class AbstractProvider(object):
                 WHERE {table_name}.id=%(id)s
             ''', data)
         except Error as e:
+            self._db.con.rollback()
             LoggerWrap().get_logger().exception(str(e))
             raise exceptions.BaseDatabaseException(f'Не удалось обновить данные. {data}')
         else:
