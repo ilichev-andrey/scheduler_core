@@ -5,6 +5,9 @@ from scheduler_core.enums import CommandType
 
 
 class AddServicesResponse(CommandResponse):
+    def __str__(self):
+        return f'AddServicesResponse(id={self.id}, status={self.status})'
+
     def get_command_type(self) -> CommandType:
         return CommandType.ADD_SERVICES
 

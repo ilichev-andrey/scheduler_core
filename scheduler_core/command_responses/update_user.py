@@ -5,6 +5,9 @@ from scheduler_core.enums import CommandType
 
 
 class UpdateUserResponse(CommandResponse):
+    def __str__(self):
+        return f'UpdateUserResponse(id={self.id}, status={self.status})'
+
     def get_command_type(self) -> CommandType:
         return CommandType.UPDATE_USER
 
