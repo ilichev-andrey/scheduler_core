@@ -3,7 +3,7 @@ import unittest
 from ddt import ddt, idata
 
 from scheduler_core.command_responses.get_workers import GetWorkersResponse
-from scheduler_core.containers import User, make_user
+from scheduler_core.containers import User
 from scheduler_core.enums import CommandStatus, CommandType, UserType
 
 
@@ -61,7 +61,17 @@ def provider_load_from_dict():
                 'func_result': True,
                 'id': 'command_id',
                 'status': CommandStatus.SUCCESSFUL_EXECUTION,
-                'workers': [make_user(**worker_data)],
+                'workers': [User(
+                    id=123,
+                    type=UserType.WORKER,
+                    first_name='first_name',
+                    last_name='last_name',
+                    phone_number='8800300600',
+                    telegram_id=456,
+                    telegram_name='telegram_name',
+                    viber_id=567,
+                    viber_name='viber_name'
+                )],
             }
         },
         # Успешная загрузка данных при неудачно выполненной команде

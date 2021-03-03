@@ -31,7 +31,7 @@ class CommandWithUser(Command):
         if not super().load_from_dict(data):
             return False
 
-        self.user = make_user(**data['user'])
+        self.user = self._user_from_dict(data['user'])
         return True
 
     def to_dict(self) -> Dict:
@@ -39,8 +39,10 @@ class CommandWithUser(Command):
         data.update({'user': self._user_to_dict()})
         return data
 
+    @staticmethod
+    def _user_from_dict(data: Dict) -> User:
+        return make_user(**data)
+
     def _user_to_dict(self) -> Dict:
         user = self.user.asdict()
-        user.pop('id')
-        user.pop('type')
         return user

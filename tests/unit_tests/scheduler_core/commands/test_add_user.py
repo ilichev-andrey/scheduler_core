@@ -3,7 +3,7 @@ import unittest
 from ddt import ddt, idata
 
 from scheduler_core.commands.add_user import AddUserCommand
-from scheduler_core.containers import User, make_user
+from scheduler_core.containers import User
 from scheduler_core.enums import CommandType, UserType
 
 
@@ -19,6 +19,7 @@ def provider_load_from_dict():
     }
 
     user_data = {
+        'type': UserType.WORKER.value,
         'first_name': 'first_name',
         'last_name': 'last_name',
         'phone_number': '88003000600',
@@ -53,7 +54,16 @@ def provider_load_from_dict():
             'expected': {
                 'func_result': True,
                 'id': 'command_id',
-                'user': make_user(id=None, **user_data)
+                'user': User(
+                    type=UserType.UNKNOWN,
+                    first_name='first_name',
+                    last_name='last_name',
+                    phone_number='88003000600',
+                    telegram_id=12345,
+                    telegram_name='telegram_name',
+                    viber_id=54321,
+                    viber_name='viber_name'
+                )
             }
         }
     ]
