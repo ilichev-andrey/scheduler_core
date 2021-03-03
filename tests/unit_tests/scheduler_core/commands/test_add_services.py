@@ -79,7 +79,7 @@ class TestAddServicesCommand(unittest.TestCase):
 
         command = AddServicesCommand()
         command.id = 'command_id'
-        command.services = [Service(id=None, name='service_name', execution_time_minutes=30)]
+        command.services = [Service(name='service_name', execution_time_minutes=30)]
         self.assertEqual(expected, command.to_dict())
 
 
