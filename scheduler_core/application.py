@@ -17,9 +17,9 @@ class Application(object):
     _config = Config
     _db = DB
 
-    def __init__(self, config: Config, database_password: str):
+    def __init__(self, config: Config):
         self._config = config
-        self._db = DB(config.database, password=database_password)
+        self._db = DB(config.database)
 
     async def run(self):
         await asyncio.gather(

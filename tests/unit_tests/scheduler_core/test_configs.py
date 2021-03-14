@@ -1,5 +1,3 @@
-import json
-import os
 import unittest
 
 import main
@@ -7,14 +5,8 @@ from scheduler_core import configs
 
 
 class TestConfig(unittest.TestCase):
-    def test_file_exists(self):
-        self.assertTrue(os.path.isfile(main.CONFIG_FILE))
-
     def test_load(self):
-        with open(main.CONFIG_FILE) as fin:
-            config = json.load(fin)
-
-        self.assertIsInstance(configs.load_config(config), configs.Config)
+        self.assertIsInstance(configs.load(main.CONFIG_FILE), configs.Config)
 
 
 if __name__ == '__main__':
