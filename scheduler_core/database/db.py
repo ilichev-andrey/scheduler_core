@@ -5,10 +5,11 @@ from scheduler_core.configs import DatabaseConfig
 
 
 class DB(object):
-    con: extensions.connection
+    con: extensions.connection = None
 
     def __init__(self, config: DatabaseConfig):
-        self.con = psycopg2.connect(password=config.password, **config._asdict())
+        self.con = psycopg2.connect(**config._asdict())
 
     def __del__(self):
-        self.con.close()
+        if self.con is not None:
+            self.con.close()
