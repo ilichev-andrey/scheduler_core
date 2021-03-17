@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Dict, Tuple, List, Iterable
 
 from psycopg2 import extras, Error
@@ -10,6 +11,14 @@ from wrappers import LoggerWrap
 
 class TimetableProvider(AbstractProvider):
     _TABLE_NAME = 'timetable'
+
+    def add(self, worker_id: int, start_dts: List[datetime]):
+        create_dt = datetime.today()
+        self._multi_add(
+            table_name=self._TABLE_NAME,
+            keys=('worker_id', 'create_dt', 'start_dt'),
+            values=((str(worker_id), f"'{create_dt}'", f"'{start_dt}'") for start_dt in start_dts)
+        )
 
     def get_by_worker_id(self, worker_id: int, date_ranges: containers.DateRanges) -> List[containers.TimetableEntry]:
         where_end_day = ''

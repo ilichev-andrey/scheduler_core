@@ -1,5 +1,6 @@
 from scheduler_core import exceptions
 from scheduler_core.command_responses.add_services import AddServicesResponse
+from scheduler_core.command_responses.add_timetable_slots import AddTimetableSlotsResponse
 from scheduler_core.command_responses.add_user import AddUserResponse
 from scheduler_core.command_responses.command_response import CommandResponse
 from scheduler_core.command_responses.delete_services import DeleteServicesResponse
@@ -42,5 +43,7 @@ def create(command_type: CommandType) -> CommandResponse:
         return GetWorkerTimetableResponse()
     if command_type == CommandType.DELETE_SERVICES:
         return DeleteServicesResponse()
+    if command_type == CommandType.ADD_TIMETABLE_SLOTS:
+        return AddTimetableSlotsResponse()
 
     raise exceptions.UnknownCommand(f'Не поддерживается команда данного типа: {command_type}')

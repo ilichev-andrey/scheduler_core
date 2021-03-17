@@ -1,5 +1,6 @@
 from scheduler_core import exceptions
 from scheduler_core.command_executors.add_services import AddServicesExecutor
+from scheduler_core.command_executors.add_timetable_slots import AddTimetableSlotsExecutor
 from scheduler_core.command_executors.add_user import AddUserExecutor
 from scheduler_core.command_executors.command_executor import CommandExecutor
 from scheduler_core.command_executors.delete_services import DeleteServicesExecutor
@@ -43,5 +44,7 @@ def create(command_type: CommandType, db: DB) -> CommandExecutor:
         return GetWorkerTimetableExecutor(db)
     if command_type == CommandType.DELETE_SERVICES:
         return DeleteServicesExecutor(db)
+    if command_type == CommandType.ADD_TIMETABLE_SLOTS:
+        return AddTimetableSlotsExecutor(db)
 
     raise exceptions.UnknownCommand(f'Не найден исполнитель для команды данного типа: {command_type}')
