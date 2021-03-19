@@ -50,3 +50,4 @@ class TimeLimit(Enum):
     DAY = 0
     WEEK = 1
     MONTH = 2
+    NO_LIMIT = 3

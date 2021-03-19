@@ -13,6 +13,7 @@ from wrappers import LoggerWrap
 
 WEEK_DAYS = 6
 MONTH_DAYS = 29
+START_EPOCH = date(2020, 1, 1)
 START_TIME = time()
 END_TIME = time(23, 59, 59)
 
@@ -21,7 +22,7 @@ def _get_data_ranges(today: date, time_type: TimeType, time_limit: TimeLimit) ->
     if time_limit == TimeLimit.DAY:
         return containers.DateRanges(
             start_dt=datetime.combine(today, START_TIME),
-            end_dt=datetime.combine(today, END_TIME),
+            end_dt=datetime.combine(today, END_TIME)
         )
 
     if time_type == TimeType.PAST:
@@ -33,18 +34,27 @@ def _get_data_ranges(today: date, time_type: TimeType, time_limit: TimeLimit) ->
         if time_limit == TimeLimit.MONTH:
             return containers.DateRanges(
                 start_dt=datetime.combine(today - timedelta(days=MONTH_DAYS), START_TIME),
-                end_dt=datetime.combine(today, END_TIME),
+                end_dt=datetime.combine(today, END_TIME)
+            )
+        if time_limit == TimeLimit.NO_LIMIT:
+            return containers.DateRanges(
+                start_dt=datetime.combine(START_EPOCH, START_TIME),
+                end_dt=datetime.combine(today, END_TIME)
             )
     if time_type == TimeType.FUTURE:
         if time_limit == TimeLimit.WEEK:
             return containers.DateRanges(
                 start_dt=datetime.combine(today, START_TIME),
-                end_dt=datetime.combine(today + timedelta(days=WEEK_DAYS), END_TIME),
+                end_dt=datetime.combine(today + timedelta(days=WEEK_DAYS), END_TIME)
             )
         if time_limit == TimeLimit.MONTH:
             return containers.DateRanges(
                 start_dt=datetime.combine(today, START_TIME),
-                end_dt=datetime.combine(today + timedelta(days=MONTH_DAYS), END_TIME),
+                end_dt=datetime.combine(today + timedelta(days=MONTH_DAYS), END_TIME)
+            )
+        if time_limit == TimeLimit.NO_LIMIT:
+            return containers.DateRanges(
+                start_dt=datetime.combine(today, START_TIME)
             )
 
 

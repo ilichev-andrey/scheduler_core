@@ -23,6 +23,10 @@ class TestGetDataRanges(unittest.TestCase):
                 DateRanges(start_dt=datetime(2021, 2, 2, 0, 0, 0), end_dt=datetime(2021, 3, 3, 23, 59, 59)),
             ],
             [
+                {'time_type': TimeType.PAST, 'time_limit': TimeLimit.NO_LIMIT},
+                DateRanges(start_dt=datetime(2020, 1, 1, 0, 0, 0), end_dt=datetime(2021, 3, 3, 23, 59, 59)),
+            ],
+            [
                 {'time_type': TimeType.FUTURE, 'time_limit': TimeLimit.DAY},
                 DateRanges(start_dt=datetime(2021, 3, 3, 0, 0, 0), end_dt=datetime(2021, 3, 3, 23, 59, 59)),
             ],
@@ -33,6 +37,10 @@ class TestGetDataRanges(unittest.TestCase):
             [
                 {'time_type': TimeType.FUTURE, 'time_limit': TimeLimit.MONTH},
                 DateRanges(start_dt=datetime(2021, 3, 3, 0, 0, 0), end_dt=datetime(2021, 4, 1, 23, 59, 59)),
+            ],
+            [
+                {'time_type': TimeType.FUTURE, 'time_limit': TimeLimit.NO_LIMIT},
+                DateRanges(start_dt=datetime(2021, 3, 3, 0, 0, 0)),
             ]
         ]
         for _params, _expected in cases:
