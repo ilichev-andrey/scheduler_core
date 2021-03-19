@@ -13,8 +13,14 @@ from scheduler_core.enums import CommandStatus
 from wrappers import LoggerWrap
 
 
-def generate_start_dts(date_ranges: containers.DateRanges, times: List[time],
-                       exclude_days: FrozenSet[date]) -> List[datetime]:
+def _restore_date_order(date_ranges: containers.DateRanges) -> containers.DateRanges:
+    if date_ranges.start_dt > date_ranges.end_dt:
+        return containers.DateRanges(start_dt=date_ranges.end_dt, end_dt=date_ranges.start_dt)
+    return date_ranges
+
+
+def _generate_start_dts(date_ranges: containers.DateRanges, times: List[time],
+                        exclude_days: FrozenSet[date]) -> List[datetime]:
     start = date_ranges.start_dt
     end = date_ranges.end_dt
     dates = []
@@ -38,19 +44,21 @@ class AddTimetableSlotsExecutor(CommandExecutor):
     async def execute(self, command: AddTimetableSlotsCommand) -> AddTimetableSlotsResponse:
         LoggerWrap().get_logger().info(f'Выполнение команды добавления слотов в расписание. {command}')
 
+        date_ranges = _restore_date_order(command.date_ranges)
         try:
-            entries = self._timetable_provider.get_by_worker_id(command.worker, command.date_ranges)
+            entries = self._timetable_provider.get_by_worker_id(command.worker, date_ranges)
         except exceptions.TimetableEntryIsNotFound:
             entries = []
 
-        start_dts = generate_start_dts(
-            date_ranges=command.date_ranges,
+        start_dts = _generate_start_dts(
+            date_ranges=date_ranges,
             times=command.times,
             exclude_days=frozenset(entry.start_dt.date() for entry in entries)
         )
 
         if start_dts:
             self._timetable_provider.add(command.worker, start_dts)
+
         return AddTimetableSlotsResponse(
             command_id=command.id,
             status=CommandStatus.SUCCESSFUL_EXECUTION,
