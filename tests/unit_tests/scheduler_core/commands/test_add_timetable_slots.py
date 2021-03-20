@@ -78,7 +78,7 @@ def provider_load_from_dict():
 
 
 @ddt
-class TestGetFreeTimetableSlotsCommand(unittest.TestCase):
+class TestAddTimetableSlotsCommand(unittest.TestCase):
     @idata(provider_load_from_dict())
     def test_load_from_dict(self, case_data):
         data, expected = case_data['data'], case_data['expected']

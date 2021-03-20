@@ -1,12 +1,29 @@
 from datetime import datetime
+from enum import Enum
 from typing import Dict, Tuple, List, Iterable
 
 from psycopg2 import extras, Error
 
-from scheduler_core import containers
+from scheduler_core import containers, enums
 from scheduler_core.database import exceptions
 from scheduler_core.database.provider.abstract_provider import AbstractProvider
 from wrappers import LoggerWrap
+
+
+def _filter_entries_by_date(entries: List[containers.TimetableEntry], time_type: enums.TimeType,
+                            reference_dt: datetime) -> List[containers.TimetableEntry]:
+    if time_type == enums.TimeType.PAST:
+        return [entry for entry in entries if entry.start_dt <= reference_dt]
+    if time_type == enums.TimeType.FUTURE:
+        return [entry for entry in entries if entry.start_dt > reference_dt]
+    else:
+        return []
+
+
+class TypeSlot(Enum):
+    FREE = 0
+    BUSY = 1
+    ALL = 3
 
 
 class TimetableProvider(AbstractProvider):
@@ -82,7 +99,7 @@ class TimetableProvider(AbstractProvider):
         cursor = self._db.con.cursor(cursor_factory=extras.RealDictCursor)
 
         # Проверка, что слоты в расписании не заняты
-        entries = self._get_slots_by_ids(entry_ids=entry_ids, free_only=True, cursor=cursor)
+        entries = self._get_slots_by_ids(entry_ids=entry_ids, type_slot=TypeSlot.FREE, cursor=cursor)
         if not entries or len(entries) != len(entry_ids):
             raise exceptions.EntryAlreadyExists('Слоты в расписании уже заняты')
 
@@ -127,23 +144,58 @@ class TimetableProvider(AbstractProvider):
         LoggerWrap().get_logger().info(f'Получены записи из таблицы расписания: {entries}')
         return [containers.make_timetable_entry(**entry) for entry in entries]
 
-    def _get_slots_by_ids(self, entry_ids: Iterable[int], free_only: bool = False,
+    def release_entries(self, entry_ids: Iterable[int]) -> List[containers.TimetableEntry]:
+        entries_before_release = _filter_entries_by_date(
+            entries=self._get_slots_by_ids(entry_ids, type_slot=TypeSlot.BUSY),
+            time_type=enums.TimeType.FUTURE,
+            reference_dt=datetime.today()
+        )
+        if not entries_before_release:
+            return []
+
+        values = ','.join((f'({entry.id})' for entry in entries_before_release))
+        update_query = f'''
+            UPDATE {self._TABLE_NAME} 
+            SET client_id=NULL, service_id=NULL, end_dt=NULL
+            FROM (VALUES {values}) AS tmp(id)
+            WHERE timetable.id=tmp.id
+        '''
+
+        cursor = self._db.con.cursor()
+        try:
+            cursor.execute(update_query)
+        except Error as e:
+            self._db.con.rollback()
+            LoggerWrap().get_logger().exception(str(e))
+            raise exceptions.BaseDatabaseException(f'Не удалось отменить записи. query="{update_query}"')
+        else:
+            self._db.con.commit()
+        finally:
+            cursor.close()
+
+        return entries_before_release
+
+    def _get_slots_by_ids(self, entry_ids: Iterable[int], type_slot: TypeSlot = TypeSlot.ALL,
                           cursor: extras.RealDictCursor = None) -> List[containers.TimetableEntry]:
         entry_ids_str = ','.join((str(entry_id) for entry_id in entry_ids))
-        where = f'WHERE id IN ({entry_ids_str})'
-        if free_only:
-            where = f'{where} AND client_id IS NULL'
+        where = f'WHERE timetable.id IN ({entry_ids_str})'
+        if type_slot == TypeSlot.FREE:
+            where = f'{where} AND timetable.client_id IS NULL'
+        if type_slot == TypeSlot.BUSY:
+            where = f'{where} AND timetable.client_id IS NOT NULL'
 
         select_query = f'''
             SELECT 
-                id,
-                worker_id,
-                client_id,
-                service_id,
-                EXTRACT(epoch FROM create_dt) AS create_dt,
-                EXTRACT(epoch FROM start_dt) AS start_dt,
-                EXTRACT(epoch FROM end_dt) AS end_dt
-            FROM {self._TABLE_NAME}     
+                timetable.id,
+                timetable.worker_id,
+                timetable.client_id,
+                timetable.service_id,
+                EXTRACT(epoch FROM timetable.create_dt) AS create_dt,
+                EXTRACT(epoch FROM timetable.start_dt) AS start_dt,
+                EXTRACT(epoch FROM timetable.end_dt) AS end_dt,
+                services.name AS service_name
+            FROM {self._TABLE_NAME}
+            LEFT JOIN services ON services.id = timetable.service_id
             {where}
         '''
 
@@ -158,7 +210,7 @@ class TimetableProvider(AbstractProvider):
         except Error as e:
             LoggerWrap().get_logger().exception(str(e))
             cursor.close()
-            raise exceptions.BaseDatabaseException(f'Не удалось получить слоты расписания. select_query={select_query}')
+            raise exceptions.BaseDatabaseException(f'Не удалось получить слоты расписания. query="{select_query}"')
 
         if cursor_is_created:
             cursor.close()
