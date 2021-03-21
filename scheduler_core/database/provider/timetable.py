@@ -73,9 +73,10 @@ class TimetableProvider(AbstractProvider):
         return self._get(f'''
             SELECT
                 timetable.id,
+                timetable.worker_id,
+                timetable.service_id,
                 EXTRACT(epoch FROM timetable.start_dt) AS start_dt,
                 EXTRACT(epoch FROM timetable.end_dt) AS end_dt,
-                timetable.service_id,
                 services.name AS service_name
             FROM {self._TABLE_NAME}
             LEFT JOIN services ON services.id = timetable.service_id        
